@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import type { Profile, Link as LinkType } from '@/lib/types';
+import MobilePreview from '@/components/MobilePreview';
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -18,8 +19,8 @@ export default function DashboardPage() {
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
 
   // Form states
-  const [linkForm, setLinkForm] = useState({ title: '', url: '', icon: '🔗' });
-  const [profileForm, setProfileForm] = useState({ username: '', display_name: '', bio: '', avatar_url: '' });
+  const [linkForm, setLinkForm] = useState({ title: '', url: '', icon: '🔗', image_url: '' });
+  const [profileForm, setProfileForm] = useState({ username: '', display_name: '', bio: '', avatar_url: '', theme: 'dark', social_links: {} as Record<string, string> });
   const [saving, setSaving] = useState(false);
 
   const router = useRouter();
@@ -60,6 +61,8 @@ export default function DashboardPage() {
           display_name: profileData.display_name || '',
           bio: profileData.bio || '',
           avatar_url: profileData.avatar_url || '',
+          theme: profileData.theme || 'dark',
+          social_links: profileData.social_links || {},
         });
       } else {
         // Auto-provision if profile is missing
@@ -93,6 +96,8 @@ export default function DashboardPage() {
             display_name: newProfile.display_name,
             bio: '',
             avatar_url: newProfile.avatar_url,
+            theme: 'dark',
+            social_links: {},
           });
         }
       }
@@ -126,13 +131,13 @@ export default function DashboardPage() {
 
   const openAddLink = () => {
     setEditingLink(null);
-    setLinkForm({ title: '', url: '', icon: '🔗' });
+    setLinkForm({ title: '', url: '', icon: '🔗', image_url: '' });
     setShowLinkModal(true);
   };
 
   const openEditLink = (link: LinkType) => {
     setEditingLink(link);
-    setLinkForm({ title: link.title, url: link.url, icon: link.icon });
+    setLinkForm({ title: link.title, url: link.url, icon: link.icon, image_url: link.image_url || '' });
     setShowLinkModal(true);
   };
 
@@ -148,7 +153,7 @@ export default function DashboardPage() {
     if (editingLink) {
       const { error } = await supabase
         .from('links')
-        .update({ title: linkForm.title, url, icon: linkForm.icon })
+        .update({ title: linkForm.title, url, icon: linkForm.icon, image_url: linkForm.image_url })
         .eq('id', editingLink?.id || '');
 
       if (error) {
@@ -165,6 +170,7 @@ export default function DashboardPage() {
           title: linkForm.title,
           url,
           icon: linkForm.icon,
+          image_url: linkForm.image_url,
           sort_order: maxOrder,
         });
 
@@ -241,6 +247,8 @@ export default function DashboardPage() {
         display_name: profileForm.display_name,
         bio: profileForm.bio,
         avatar_url: profileForm.avatar_url,
+        theme: profileForm.theme,
+        social_links: profileForm.social_links,
       })
       .eq('id', profile?.id || '');
 
@@ -287,8 +295,10 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard">
-      <div className="container-wide">
-        {/* Header */}
+      <div className="dashboard-layout">
+        <div className="dashboard-editor">
+          <div className="container-wide">
+            {/* Header */}
         <div className="dashboard-header animate-fade-in">
           <div>
             <h1>Dashboard</h1>
@@ -313,6 +323,8 @@ export default function DashboardPage() {
                 display_name: profile?.display_name || '',
                 bio: profile?.bio || '',
                 avatar_url: profile?.avatar_url || '',
+                theme: profile?.theme || 'dark',
+                social_links: profile?.social_links || {},
               });
               setShowProfileModal(true);
             }}>
@@ -389,6 +401,12 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
+          </div>
+        </div>
+
+        <div className="dashboard-preview-container">
+          <MobilePreview profileForm={profileForm} links={links} />
+        </div>
       </div>
 
       {/* Add/Edit Link Modal */}
@@ -432,6 +450,17 @@ export default function DashboardPage() {
                   value={linkForm.url}
                   onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
                   required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="link-image">Thumbnail Image URL (optional)</label>
+                <input
+                  id="link-image"
+                  type="text"
+                  className="form-input"
+                  placeholder="https://example.com/image.jpg"
+                  value={linkForm.image_url}
+                  onChange={(e) => setLinkForm({ ...linkForm, image_url: e.target.value })}
                 />
               </div>
               <div className="modal-actions">
@@ -499,6 +528,74 @@ export default function DashboardPage() {
                   placeholder="https://example.com/avatar.jpg"
                   value={profileForm.avatar_url}
                   onChange={(e) => setProfileForm({ ...profileForm, avatar_url: e.target.value })}
+                />
+              </div>
+
+              <div className="dashboard-section" style={{ marginTop: 'var(--space-xl)', marginBottom: 'var(--space-md)' }}>
+                <h2>Appearance</h2>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-theme">Theme Template</label>
+                <select
+                  id="profile-theme"
+                  className="form-input"
+                  value={profileForm.theme}
+                  onChange={(e) => setProfileForm({ ...profileForm, theme: e.target.value })}
+                >
+                  <option value="dark">Dark (Default)</option>
+                  <option value="light">Light</option>
+                  <option value="neon">Neon Cipher</option>
+                  <option value="glass">Glassmorphism</option>
+                </select>
+              </div>
+
+              <div className="dashboard-section" style={{ marginTop: 'var(--space-xl)', marginBottom: 'var(--space-md)' }}>
+                <h2>Social Links</h2>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-social-twitter">Twitter / X</label>
+                <input
+                  id="profile-social-twitter"
+                  type="text"
+                  className="form-input"
+                  placeholder="https://twitter.com/yourname"
+                  value={profileForm.social_links.twitter || ''}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, twitter: e.target.value } })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-social-instagram">Instagram</label>
+                <input
+                  id="profile-social-instagram"
+                  type="text"
+                  className="form-input"
+                  placeholder="https://instagram.com/yourname"
+                  value={profileForm.social_links.instagram || ''}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, instagram: e.target.value } })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-social-github">GitHub</label>
+                <input
+                  id="profile-social-github"
+                  type="text"
+                  className="form-input"
+                  placeholder="https://github.com/yourname"
+                  value={profileForm.social_links.github || ''}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, github: e.target.value } })}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="profile-social-linkedin">LinkedIn</label>
+                <input
+                  id="profile-social-linkedin"
+                  type="text"
+                  className="form-input"
+                  placeholder="https://linkedin.com/in/yourname"
+                  value={profileForm.social_links.linkedin || ''}
+                  onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, linkedin: e.target.value } })}
                 />
               </div>
               <div className="modal-actions">

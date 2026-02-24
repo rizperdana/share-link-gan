@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS profiles (
   display_name TEXT,
   bio TEXT,
   avatar_url TEXT,
+  theme TEXT DEFAULT 'light',
+  social_links JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -20,6 +22,7 @@ CREATE TABLE IF NOT EXISTS links (
   title TEXT NOT NULL,
   url TEXT NOT NULL,
   icon TEXT DEFAULT '🔗',
+  image_url TEXT,
   sort_order INT DEFAULT 0,
   is_active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT now()
@@ -63,3 +66,8 @@ CREATE POLICY "Users can delete their own links"
 CREATE INDEX IF NOT EXISTS idx_links_user_id ON links(user_id);
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON profiles(username);
 CREATE INDEX IF NOT EXISTS idx_links_sort_order ON links(user_id, sort_order);
+
+-- Add newly introduced columns iteratively to existing tables securely without dropping data
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS theme TEXT DEFAULT 'light';
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS social_links JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE links ADD COLUMN IF NOT EXISTS image_url TEXT;

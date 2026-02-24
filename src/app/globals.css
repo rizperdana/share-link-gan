@@ -51,6 +51,55 @@
   --transition-slow: 400ms ease;
 }
 
+/* ---- Themes ---- */
+[data-theme="dark"] {
+  /* Default is matching the :root */
+}
+
+[data-theme="light"] {
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f3f4f6;
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-glow: rgba(139, 92, 246, 0.2);
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+}
+
+[data-theme="neon"] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #111111;
+  --bg-card-hover: #1a1a1a;
+  --bg-glass: rgba(0, 0, 0, 0.8);
+  --border-color: #39ff14;
+  --border-glow: #39ff14;
+  --text-primary: #ffffff;
+  --text-secondary: #39ff14;
+  --text-muted: #06b6d4;
+  --accent-gradient: linear-gradient(135deg, #39ff14, #06b6d4);
+}
+
+[data-theme="glass"] {
+  --bg-primary: #e2e8f0;
+  --bg-secondary: rgba(255, 255, 255, 0.3);
+  --bg-card: rgba(255, 255, 255, 0.2);
+  --bg-card-hover: rgba(255, 255, 255, 0.4);
+  --bg-glass: rgba(255, 255, 255, 0.15);
+  --border-color: rgba(255, 255, 255, 0.4);
+  --border-glow: rgba(255, 255, 255, 0.8);
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+}
+
+body[data-theme="glass"] {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -760,6 +809,101 @@ input, textarea {
 }
 
 /* ---- Responsive ---- */
+
+/* ---- Social Links ---- */
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.social-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.social-icon:hover {
+  color: var(--accent-purple);
+  transform: translateY(-2px);
+}
+
+.profile-link-thumbnail {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ---- Dashboard Dual Column Layout ---- */
+.dashboard-layout {
+  display: flex;
+  gap: var(--space-xl);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-editor {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-preview-container {
+  width: 350px;
+  flex-shrink: 0;
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-preview-container {
+    display: block;
+    position: sticky;
+    top: var(--space-xl);
+    height: calc(100vh - calc(var(--space-xl) * 2));
+  }
+}
+
+/* ---- Phone Frame Preview ---- */
+.phone-frame {
+  width: 100%;
+  height: 700px;
+  max-height: 100%;
+  border: 12px solid #111;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  background: var(--bg-primary);
+}
+
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 25px;
+  background: #111;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  z-index: 10;
+}
+
+.phone-content {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: inherit;
+}
+
+.phone-content::-webkit-scrollbar {
+  display: none;
+}
 
 @media (max-width: 640px) {
   .landing-logo {

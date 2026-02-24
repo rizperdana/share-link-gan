@@ -4,6 +4,8 @@ export interface Profile {
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
+  theme?: string;
+  social_links?: any;
   created_at: string;
 }
 
@@ -13,6 +15,7 @@ export interface Link {
   title: string;
   url: string;
   icon: string;
+  image_url?: string;
   sort_order: number;
   is_active: boolean;
   created_at: string;
