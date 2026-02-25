@@ -1,0 +1,53 @@
+{
+    "home": {
+        "hero_title": "Literally just a database and some divs.",
+        "hero_subtitle": "Why pay 10 bucks a month for a link page? I built this at 3 AM fueled by caffeine. You deserve to have all features for free.",
+        "cta_button": "Just take it it's free",
+        "claim_prefix": "share-link-gan.vercel.com/",
+        "claim_placeholder": "your_cool_name",
+        "claim_button": "Gimme",
+        "already_have_account": "You've been here before?",
+        "login": "Get in loser"
+    },
+    "features": {
+        "title": "It's not rocket science",
+        "f1_title": "I added Drag & Drop",
+        "f1_desc": "Because apparently clicking arrows is too much work in 2026. Just yeet the links where you want them.",
+        "f2_title": "Colors and Stuff",
+        "f2_desc": "I centered a div and picked some colors so you don't have to.",
+        "f3_title": "Stalk your visitors",
+        "f3_desc": "Graph goes up = dopamine. Track who clicks what, I don't judge."
+    },
+    "auth": {
+        "login_title": "Ah shit, here we go again",
+        "login_subtitle": "Prove you're not a bot",
+        "google_login": "Let Google deal with it",
+        "email_login": "Or type things manually like a boomer",
+        "email_placeholder": "email address",
+        "password_placeholder": "password (don't use 1234)",
+        "sign_in": "Let me in",
+        "no_account": "Who are you?",
+        "signup": "Sign up I guess",
+        "signup_title": "Who wants a free account?",
+        "signup_subtitle": "Give me your data (I promise I won't sell it)",
+        "register": "Gimme access"
+    },
+    "dashboard": {
+        "title": "The Control Room",
+        "links": "Your junk",
+        "appearance": "Make it pretty",
+        "settings": "Nerd stuff",
+        "analytics": "Numbers",
+        "posts": "Shitposting",
+        "subscribers": "Your fans",
+        "add_link": "YEET another link",
+        "no_links": "Wow, so empty. Drop a link already.",
+        "view_page": "Stare at your page →",
+        "logout": "I'm out"
+    },
+    "footer": {
+        "copyright": "© 2026 ShareLinkGan. Built at 3 AM.",
+        "terms": "Lawyer stuff",
+        "privacy": "We literally don't care about your data"
+    }
+}

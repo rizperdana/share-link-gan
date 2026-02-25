@@ -76,10 +76,32 @@ export default function MobilePreview({
 
   return (
     <div className="phone-frame" data-theme={theme}>
-      <div className="phone-notch"></div>
+      <div className="phone-notch">
+        <div className="phone-notch-camera"></div>
+        <div className="phone-notch-speaker"></div>
+      </div>
+
+      <div className="phone-status-bar">
+        <span>9:41</span>
+        <div className="phone-status-right">
+          {/* Cellular */}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21 4h-3v16h3V4zm-5 4h-3v12h3V8zm-5 4H8v8h3v-8zm-5 4H3v4h3v-4z"/>
+          </svg>
+          {/* Wifi */}
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.01 21.49L23.64 7c-.45-.34-4.93-4-11.64-4C5.28 3 .81 6.66.36 7l11.63 14.49.01.01.01-.01z"/>
+          </svg>
+          {/* Battery */}
+          <svg width="14" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/>
+          </svg>
+        </div>
+      </div>
+
       <div
         className="phone-content profile-page"
-        style={{ minHeight: "100%", padding: "3rem 1.5rem" }}
+        style={{ width: "100%", padding: "48px 1.5rem 1.5rem" }}
       >
         <div className="profile-container" style={{ maxWidth: "100%" }}>
           <div className="profile-avatar">

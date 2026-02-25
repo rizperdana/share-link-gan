@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, Link as LinkType, Post } from "@/lib/types";
+import Image from "next/image";
+import DOMPurify from "dompurify";
 
 function getSocialIcon(platform: string) {
   switch (platform) {
@@ -171,9 +173,13 @@ export default function ProfilePageClient({
         {/* Avatar */}
         <div className="profile-avatar animate-fade-in-up">
           {profile.avatar_url ? (
-            <img
+            <Image
               src={profile.avatar_url}
               alt={profile.display_name || profile.username}
+              width={96}
+              height={96}
+              className="profile-avatar-img"
+              unoptimized // If the URL is external (Supabase Storage) and domains aren't configured yet
             />
           ) : (
             initials
@@ -223,18 +229,28 @@ export default function ProfilePageClient({
                 className="profile-link-card"
                 style={{ animationDelay: `${0.15 + index * 0.08}s` }}
               >
-                {link.is_private && <span className="link-badge">🔒</span>}
+                {link.is_private && (
+                  <span className="link-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  </span>
+                )}
                 {link.image_url ? (
-                  <img
-                    src={link.image_url}
-                    alt=""
-                    className="profile-link-thumbnail"
-                  />
+                  <div className="profile-link-thumbnail" style={{ position: "relative", width: 40, height: 40, overflow: "hidden", borderRadius: "8px" }}>
+                    <Image
+                      src={link.image_url}
+                      alt={link.title}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      unoptimized
+                    />
+                  </div>
                 ) : (
                   <span className="profile-link-icon">{link.icon}</span>
                 )}
                 <span className="profile-link-title">{link.title}</span>
-                <span className="profile-link-arrow">→</span>
+                <span className="profile-link-arrow">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
               </button>
             ))
           ) : (
@@ -260,9 +276,10 @@ export default function ProfilePageClient({
               <button
                 className="btn btn-outline"
                 onClick={() => setShowSubscribe(true)}
-                style={{ width: "100%" }}
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
               >
-                🔔 Subscribe for updates
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                Subscribe for updates
               </button>
             ) : (
               <div className="subscribe-form">
@@ -302,13 +319,28 @@ export default function ProfilePageClient({
             {posts.map((post) => (
               <div key={post.id} className="profile-post-card">
                 <h3>{post.title}</h3>
-                {post.body && <p>{post.body}</p>}
-                {post.image_url && <img src={post.image_url} alt="" />}
+                {post.body && (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.body) }}
+                    style={{ marginBottom: "12px", color: "var(--text-secondary)" }}
+                  />
+                )}
+                {post.image_url && (
+                  <div style={{ position: "relative", width: "100%", height: "200px", borderRadius: "12px", overflow: "hidden", marginTop: "12px" }}>
+                    <Image
+                      src={post.image_url}
+                      alt={post.title}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      unoptimized
+                    />
+                  </div>
+                )}
                 <span
                   style={{
                     fontSize: "0.7rem",
                     opacity: 0.5,
-                    marginTop: 4,
+                    marginTop: 12,
                     display: "block",
                   }}
                 >

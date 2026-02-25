@@ -7,9 +7,14 @@ import type { Profile, Link as LinkType } from "@/lib/types";
 import MobilePreview from "@/components/MobilePreview";
 import ImageUpload from "@/components/ImageUpload";
 import DragDropLinks from "@/components/DragDropLinks";
+import LinkForm from "@/components/dashboard/LinkForm";
 import AnalyticsTab from "@/components/dashboard/AnalyticsTab";
 import PostsTab from "@/components/dashboard/PostsTab";
 import SubscribersTab from "@/components/dashboard/SubscribersTab";
+import DOMPurify from "dompurify";
+import Image from "next/image";
+import { useTranslation } from "@/lib/i18n";
+import LanguageSelector from "@/components/LanguageSelector";
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -23,14 +28,14 @@ export default function DashboardPage() {
 
   // Modal and Tab states
   const [activeTab, setActiveTab] = useState<"links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers">("links");
-  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [showLinkForm, setShowLinkForm] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
 
   // Form states
   const [linkForm, setLinkForm] = useState({
     title: "",
     url: "",
-    icon: "🔗",
+    icon: "",
     image_url: "",
     scheduled_start: "",
     scheduled_end: "",
@@ -55,6 +60,8 @@ export default function DashboardPage() {
 
   const router = useRouter();
   const supabase = createClient();
+
+  const { t } = useTranslation();
 
   const showMessage = (type: "success" | "error", text: string) => {
     setMessage({ type, text });
@@ -181,68 +188,41 @@ export default function DashboardPage() {
 
   const openAddLink = () => {
     setEditingLink(null);
-    setLinkForm({
-      title: "",
-      url: "",
-      icon: "🔗",
-      image_url: "",
-      scheduled_start: "",
-      scheduled_end: "",
-      tags: "",
-      is_private: false,
-      private_pin: "",
-    });
-    setShowLinkModal(true);
+    setShowLinkForm(true);
   };
 
   const openEditLink = (link: LinkType) => {
     setEditingLink(link);
-    setLinkForm({
-      title: link.title,
-      url: link.url,
-      icon: link.icon,
-      image_url: link.image_url || "",
-      scheduled_start: link.scheduled_start
-        ? new Date(link.scheduled_start).toISOString().slice(0, 16)
-        : "",
-      scheduled_end: link.scheduled_end
-        ? new Date(link.scheduled_end).toISOString().slice(0, 16)
-        : "",
-      tags: (link.tags || []).join(", "),
-      is_private: link.is_private || false,
-      private_pin: link.private_pin || "",
-    });
-    setShowLinkModal(true);
+    setShowLinkForm(true);
   };
 
-  const saveLink = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const saveLink = async (formData: any) => {
     setSaving(true);
 
-    let url = linkForm.url;
+    let url = formData.url;
     if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
       url = "https://" + url;
     }
 
-    const tagsArray = linkForm.tags
+    const tagsArray = formData.tags
       .split(",")
-      .map((t) => t.trim())
+      .map((t: string) => t.trim())
       .filter(Boolean);
 
     const linkData = {
-      title: linkForm.title,
+      title: formData.title,
       url,
-      icon: linkForm.icon,
-      image_url: linkForm.image_url,
-      scheduled_start: linkForm.scheduled_start
-        ? new Date(linkForm.scheduled_start).toISOString()
+      icon: formData.icon,
+      image_url: formData.image_url,
+      scheduled_start: formData.scheduled_start
+        ? new Date(formData.scheduled_start).toISOString()
         : null,
-      scheduled_end: linkForm.scheduled_end
-        ? new Date(linkForm.scheduled_end).toISOString()
+      scheduled_end: formData.scheduled_end
+        ? new Date(formData.scheduled_end).toISOString()
         : null,
       tags: tagsArray,
-      is_private: linkForm.is_private,
-      private_pin: linkForm.is_private ? linkForm.private_pin : null,
+      is_private: formData.is_private,
+      private_pin: formData.is_private ? formData.private_pin : null,
     };
 
     if (editingLink) {
@@ -273,7 +253,8 @@ export default function DashboardPage() {
     }
 
     setSaving(false);
-    setShowLinkModal(false);
+    setShowLinkForm(false);
+    setEditingLink(null);
     fetchData();
   };
 
@@ -425,6 +406,7 @@ export default function DashboardPage() {
       <div className="dash-topbar">
         <div className="dash-topbar-logo">ShareLinkGan</div>
         <div className="dash-topbar-actions">
+          <LanguageSelector />
           {profile && (
             <a
               href={`/${profile.username}`}
@@ -432,11 +414,11 @@ export default function DashboardPage() {
               rel="noopener noreferrer"
               className="btn btn-outline btn-sm"
             >
-              View my page →
+              {t("dashboard.view_page")}
             </a>
           )}
           <button className="btn btn-secondary btn-sm" onClick={handleLogout}>
-            Logout
+            {t("dashboard.logout")}
           </button>
         </div>
       </div>
@@ -447,7 +429,7 @@ export default function DashboardPage() {
           <div className="dash-sidebar-profile">
             <div className="dash-sidebar-avatar">
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" />
+                <Image src={profile.avatar_url} alt="" width={48} height={48} className="sidebar-avatar-img" unoptimized />
               ) : (
                 <span>{(profile?.display_name || profile?.username || "U").charAt(0).toUpperCase()}</span>
               )}
@@ -460,7 +442,7 @@ export default function DashboardPage() {
                 rel="noopener noreferrer"
                 className="dash-sidebar-link"
               >
-                sharelinkgan.com/{profile?.username}
+                share-link-gan.vercel.com/{profile?.username}
               </a>
             </div>
           </div>
@@ -469,30 +451,30 @@ export default function DashboardPage() {
             <div className="dash-sidebar-group">
               <button className={`dash-nav-item ${activeTab === "links" ? "active" : ""}`} onClick={() => handleTabChange("links")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                <span>Links</span>
+                <span>{t("dashboard.links")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "appearance" ? "active" : ""}`} onClick={() => handleTabChange("appearance")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-                <span>Appearance</span>
+                <span>{t("dashboard.appearance")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "settings" ? "active" : ""}`} onClick={() => handleTabChange("settings")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                <span>Settings</span>
+                <span>{t("dashboard.settings")}</span>
               </button>
 
               <div className="dash-sidebar-divider" />
 
               <button className={`dash-nav-item ${activeTab === "analytics" ? "active" : ""}`} onClick={() => handleTabChange("analytics")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                <span>Analytics</span>
+                <span>{t("dashboard.analytics")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "posts" ? "active" : ""}`} onClick={() => handleTabChange("posts")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                <span>Posts</span>
+                <span>{t("dashboard.posts")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "subscribers" ? "active" : ""}`} onClick={() => handleTabChange("subscribers")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span>Subscribers</span>
+                <span>{t("dashboard.subscribers")}</span>
               </button>
             </div>
           </div>
@@ -521,7 +503,7 @@ export default function DashboardPage() {
                     };
                     saveAvatar();
                   }}
-                  bucket="avatars"
+                  bucket="sharelinkgan_bucket"
                   folder="profile"
                   shape="circle"
                   size={80}
@@ -529,21 +511,33 @@ export default function DashboardPage() {
                 />
                 <div className="dash-profile-info">
                   <h2>{profile?.display_name || profile?.username}</h2>
-                  <p>sharelinkgan.com/{profile?.username}</p>
+                  <p>share-link-gan.vercel.com/{profile?.username}</p>
                 </div>
               </div>
 
               <div style={{ marginBottom: "24px" }}>
-                <button className="btn btn-primary" onClick={openAddLink} style={{ width: "100%", padding: "16px", borderRadius: "100px", fontSize: "1rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Add new link
-                </button>
+                {!showLinkForm && (
+                  <button className="btn btn-primary animate-fade-in-up" onClick={openAddLink} style={{ width: "100%", padding: "16px", borderRadius: "100px", fontSize: "1rem", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    {t("dashboard.add_link")}
+                  </button>
+                )}
+                {showLinkForm && (
+                  <LinkForm
+                    initialData={editingLink}
+                    onSave={saveLink}
+                    onCancel={() => { setShowLinkForm(false); setEditingLink(null); }}
+                    saving={saving}
+                  />
+                )}
               </div>
 
               {links.length === 0 ? (
                 <div className="dash-card" style={{ textAlign: "center", padding: "48px 24px", color: "var(--gray-400)" }}>
-                  <p style={{ fontSize: "2.5rem", marginBottom: "8px" }}>📎</p>
-                  <p style={{ fontSize: "1rem" }}>Show the world who you are. Add a link to get started.</p>
+                  <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                  </div>
+                  <p style={{ fontSize: "1rem" }}>{t("dashboard.no_links")}</p>
                 </div>
               ) : (
                 <DragDropLinks
@@ -570,7 +564,7 @@ export default function DashboardPage() {
                       <ImageUpload
                         currentUrl={profileForm.avatar_url}
                         onUpload={(url) => setProfileForm({ ...profileForm, avatar_url: url })}
-                        bucket="avatars"
+                        bucket="sharelinkgan_bucket"
                         folder="profile"
                         shape="circle"
                         size={96}
@@ -769,135 +763,11 @@ export default function DashboardPage() {
 
         {/* Preview Panel */}
         <div className="dash-preview">
-          <MobilePreview profileForm={profileForm} links={links} />
-        </div>
-      </div>
-
-      {/* Add/Edit Link Modal */}
-      {showLinkModal && (
-        <div className="modal-overlay" onClick={() => setShowLinkModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>{editingLink ? "Edit Link" : "Add New Link"}</h2>
-            <form onSubmit={saveLink}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="link-icon">Icon (emoji)</label>
-                <input
-                  id="link-icon"
-                  type="text"
-                  className="form-input"
-                  placeholder="🔗"
-                  value={linkForm.icon}
-                  onChange={(e) => setLinkForm({ ...linkForm, icon: e.target.value })}
-                  maxLength={2}
-                  style={{ width: "80px", fontSize: "1.5rem", textAlign: "center" }}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="link-title">Title</label>
-                <input
-                  id="link-title"
-                  type="text"
-                  className="form-input"
-                  placeholder="My Website"
-                  value={linkForm.title}
-                  onChange={(e) => setLinkForm({ ...linkForm, title: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="link-url">URL</label>
-                <input
-                  id="link-url"
-                  type="text"
-                  className="form-input"
-                  placeholder="https://example.com"
-                  value={linkForm.url}
-                  onChange={(e) => setLinkForm({ ...linkForm, url: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Thumbnail (optional)</label>
-                <ImageUpload
-                  currentUrl={linkForm.image_url}
-                  onUpload={(url) => setLinkForm({ ...linkForm, image_url: url })}
-                  bucket="avatars"
-                  folder="thumbnails"
-                  shape="square"
-                  size={64}
-                  label="Upload"
-                />
-              </div>
-
-              {/* Tags */}
-              <div className="form-group">
-                <label className="form-label" htmlFor="link-tags">Tags (comma separated)</label>
-                <input
-                  id="link-tags"
-                  type="text"
-                  className="form-input"
-                  placeholder="promo, social, work"
-                  value={linkForm.tags}
-                  onChange={(e) => setLinkForm({ ...linkForm, tags: e.target.value })}
-                />
-              </div>
-
-              {/* Schedule */}
-              <div className="form-row">
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label" htmlFor="link-start">Show from (optional)</label>
-                  <input
-                    id="link-start"
-                    type="datetime-local"
-                    className="form-input"
-                    value={linkForm.scheduled_start}
-                    onChange={(e) => setLinkForm({ ...linkForm, scheduled_start: e.target.value })}
-                  />
-                </div>
-                <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label" htmlFor="link-end">Hide after (optional)</label>
-                  <input
-                    id="link-end"
-                    type="datetime-local"
-                    className="form-input"
-                    value={linkForm.scheduled_end}
-                    onChange={(e) => setLinkForm({ ...linkForm, scheduled_end: e.target.value })}
-                  />
-                </div>
-              </div>
-
-              {/* Private */}
-              <div className="form-group">
-                <label className="toggle-label">
-                  <input
-                    type="checkbox"
-                    checked={linkForm.is_private}
-                    onChange={(e) => setLinkForm({ ...linkForm, is_private: e.target.checked })}
-                  />
-                  <span>🔒 Private link (require PIN to unlock)</span>
-                </label>
-                {linkForm.is_private && (
-                  <input
-                    type="text"
-                    className="form-input"
-                    placeholder="Enter PIN (e.g. 1234)"
-                    value={linkForm.private_pin}
-                    onChange={(e) => setLinkForm({ ...linkForm, private_pin: e.target.value })}
-                    maxLength={10}
-                    style={{ marginTop: 12 }}
-                  />
-                )}
-              </div>
-              <div className="modal-actions" style={{ marginTop: 32 }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowLinkModal(false)} style={{ padding: "12px 24px" }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" disabled={saving} style={{ padding: "12px 24px" }}>
-                  {saving ? <span className="spinner" /> : editingLink ? "Save Changes" : "Add Link"}
-                </button>
-              </div>
-            </form>
+          <div className="mobile-preview-container">
+            <MobilePreview profileForm={profileForm} links={links} />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -16,7 +16,7 @@ interface ImageUploadProps {
 export default function ImageUpload({
   currentUrl,
   onUpload,
-  bucket = "avatars",
+  bucket = "sharelinkgan_bucket",
   folder = "",
   shape = "circle",
   size = 96,
@@ -73,12 +73,16 @@ export default function ImageUpload({
           <>
             <img src={currentUrl} alt="" className="image-upload-preview" />
             <div className="image-upload-overlay">
-              <span>📷</span>
+              <span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+              </span>
             </div>
           </>
         ) : (
           <div className="image-upload-placeholder">
-            <span style={{ fontSize: size > 60 ? "1.5rem" : "1rem" }}>📷</span>
+            <span style={{ display: "inline-block", marginBottom: 4 }}>
+              <svg width={size > 60 ? "32" : "20"} height={size > 60 ? "32" : "20"} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+            </span>
             <span style={{ fontSize: "0.7rem", marginTop: 4 }}>{label}</span>
           </div>
         )}

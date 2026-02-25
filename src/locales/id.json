@@ -1,0 +1,53 @@
+{
+    "home": {
+        "hero_title": "Cuma database dikasih div doang.",
+        "hero_subtitle": "Ngapain bayar langganan mahal-mahal buat link in bio? Gua bikin ini jam 3 pagi pake kopi sachet. Lu porsi dapet semua fitur gratis.",
+        "cta_button": "Pake aja gratis elah",
+        "claim_prefix": "share-link-gan.vercel.com/",
+        "claim_placeholder": "nama_keren_lu",
+        "claim_button": "Sikat",
+        "already_have_account": "Udah pernah ke sini yak?",
+        "login": "Masuk woy"
+    },
+    "features": {
+        "title": "Ngga ribet kok asli",
+        "f1_title": "Gua Tambahin Drag & Drop",
+        "f1_desc": "Soalnya ngeklik tombol panah itu capek. Tinggal seret aja link lu ke mana kek.",
+        "f2_title": "Warna-warni dikit",
+        "f2_desc": "Biar agak estetik dikit lah, gua udah center div nya buat lu.",
+        "f3_title": "Kepoin traffic lu",
+        "f3_desc": "Grafik naik bikin happy. Pantau siapa aja yg ngeklik, gua ga akan ngejudge."
+    },
+    "auth": {
+        "login_title": "Balik lagi lu",
+        "login_subtitle": "Buktiin kalo lu bukan robot",
+        "google_login": "Biar Google aja yang ngurus",
+        "email_login": "Atau ketik manual kayak boomer",
+        "email_placeholder": "email ngab",
+        "password_placeholder": "password (jangan 123456)",
+        "sign_in": "Gas Masuk",
+        "no_account": "Apasih blm punya akun?",
+        "signup": "Daftar aja udah",
+        "signup_title": "Bikin akun gratisan",
+        "signup_subtitle": "Masukin data lu (santai gak bakal gua jual)",
+        "register": "Gaskeun"
+    },
+    "dashboard": {
+        "title": "Ruang Kendali",
+        "links": "Gudang Link",
+        "appearance": "Biar Cakep",
+        "settings": "Aturan Ribet",
+        "analytics": "Angka-angka",
+        "posts": "Tempat Bacot",
+        "subscribers": "Fans Lu",
+        "add_link": "LEMPAR link baru",
+        "no_links": "Kosong amat idup lu. Tambahin link napa.",
+        "view_page": "Liat hasil lu →",
+        "logout": "Cabut"
+    },
+    "footer": {
+        "copyright": "© 2026 ShareLinkGan. Dibuat jam 3 Pagi.",
+        "terms": "Urusan hukum (males baca)",
+        "privacy": "Kita beneran ga peduli data lu"
+    }
+}

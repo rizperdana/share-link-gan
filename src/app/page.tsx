@@ -1,6 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n";
+import LanguageSelector from "@/components/LanguageSelector";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="lt-page">
       {/* Navigation */}
@@ -9,11 +15,12 @@ export default function Home() {
           <Link href="/">ShareLinkGan</Link>
         </div>
         <div className="lt-nav-actions">
+          <LanguageSelector />
           <Link href="/login" className="lt-nav-login">
-            Log in
+            {t("home.login")}
           </Link>
           <Link href="/register" className="lt-nav-signup">
-            Sign up free
+            {t("home.cta_button")}
           </Link>
         </div>
       </nav>
@@ -22,22 +29,20 @@ export default function Home() {
       <section className="lt-hero">
         <div className="lt-hero-content animate-fade-in-up">
           <h1 className="lt-hero-title">
-            Everything you are. In one, simple link in bio.
+            {t("home.hero_title")}
           </h1>
           <p className="lt-hero-subtitle">
-            Join 50M+ people using ShareLinkGan for their link in bio. One link
-            to help you share everything you create, curate and sell from your
-            Instagram, TikTok, Twitter, YouTube and other social media profiles.
+            {t("home.hero_subtitle")}
           </p>
           <div className="lt-claim-bar">
-            <span className="lt-claim-prefix">share-link-gan.vercel.com/</span>
+            <span className="lt-claim-prefix">{t("home.claim_prefix")}</span>
             <input
               type="text"
               className="lt-claim-input"
-              placeholder="yourname"
+              placeholder={t("home.claim_placeholder")}
             />
             <Link href="/register" className="lt-claim-btn">
-              Claim your LinkGan
+              {t("home.claim_button")}
             </Link>
           </div>
         </div>
@@ -63,159 +68,87 @@ export default function Home() {
 
       {/* Feature Sections */}
       <section className="lt-features">
-        <div className="lt-feature-block">
-          <div className="lt-feature-text">
-            <h2>Create and customize your ShareLinkGan in minutes</h2>
-            <p>
-              Connect your TikTok, Instagram, Twitter, website, store, videos,
-              music, podcast, events and more. It all comes together in a link
-              in bio landing page designed to convert.
-            </p>
-            <Link href="/register" className="btn btn-primary">
-              Get started for free
-            </Link>
-          </div>
-          <div className="lt-feature-visual">
-            <div className="lt-feature-card green">🎨</div>
-          </div>
-        </div>
+        <h2 style={{ textAlign: "center", marginBottom: "48px", fontSize: "2.5rem" }}>
+          {t("features.title")}
+        </h2>
 
         <div className="lt-feature-block">
           <div className="lt-feature-text">
-            <h2>
-              Share your ShareLinkGan from your Instagram, TikTok, Twitter and
-              other bios
-            </h2>
-            <p>
-              Add your unique ShareLinkGan URL to all the platforms and places
-              you find your audience. Then use your QR code to drive your
-              offline traffic online.
-            </p>
+            <h2>{t("features.f1_title")}</h2>
+            <p>{t("features.f1_desc")}</p>
             <Link href="/register" className="btn btn-primary">
-              Get started for free
+              {t("home.cta_button")}
             </Link>
           </div>
           <div className="lt-feature-visual">
-            <div className="lt-feature-card purple">📱</div>
+            <div className="lt-feature-card green">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>
+            </div>
           </div>
         </div>
 
         <div className="lt-feature-block">
           <div className="lt-feature-text">
-            <h2>Analyze your audience and keep them engaged</h2>
-            <p>
-              Track your engagement over time, monitor revenue and learn
-              what&apos;s converting your audience. Make informed updates on the
-              fly to keep them coming back.
-            </p>
+            <h2>{t("features.f2_title")}</h2>
+            <p>{t("features.f2_desc")}</p>
             <Link href="/register" className="btn btn-primary">
-              Get started for free
+              {t("home.cta_button")}
             </Link>
           </div>
           <div className="lt-feature-visual">
-            <div className="lt-feature-card blue">📊</div>
+            <div className="lt-feature-card purple">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="lt-feature-block">
+          <div className="lt-feature-text">
+            <h2>{t("features.f3_title")}</h2>
+            <p>{t("features.f3_desc")}</p>
+            <Link href="/register" className="btn btn-primary">
+              {t("home.cta_button")}
+            </Link>
+          </div>
+          <div className="lt-feature-visual">
+            <div className="lt-feature-card blue">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof */}
-      <section className="lt-social-proof">
-        <h2>The only link in bio trusted by 50M+</h2>
-        <div className="lt-proof-grid">
-          <div className="lt-proof-card">
-            <div className="lt-proof-number">50M+</div>
-            <div className="lt-proof-label">Active users</div>
-          </div>
-          <div className="lt-proof-card">
-            <div className="lt-proof-number">1B+</div>
-            <div className="lt-proof-label">Monthly visitors</div>
-          </div>
-          <div className="lt-proof-card">
-            <div className="lt-proof-number">∞</div>
-            <div className="lt-proof-label">Links shared</div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="lt-faq">
-        <h2>Questions? Answered</h2>
-        <div className="lt-faq-item">
-          <div className="lt-faq-q">What is ShareLinkGan?</div>
-          <div className="lt-faq-a">
-            ShareLinkGan is a link-in-bio tool that lets you share everything
-            you create, curate and sell online — all from one simple link in
-            your social media bio.
-          </div>
-        </div>
-        <div className="lt-faq-item">
-          <div className="lt-faq-q">Is ShareLinkGan free?</div>
-          <div className="lt-faq-a">
-            Yes! ShareLinkGan offers a free plan with unlimited links. Create
-            your page, customize it, and start sharing in minutes.
-          </div>
-        </div>
-        <div className="lt-faq-item">
-          <div className="lt-faq-q">How many links can I add?</div>
-          <div className="lt-faq-a">
-            You can add unlimited links to your ShareLinkGan page. There&apos;s
-            no cap — add as many as you need to share your world.
-          </div>
-        </div>
-        <div className="lt-faq-item">
-          <div className="lt-faq-q">Can I customize the look of my page?</div>
-          <div className="lt-faq-a">
-            Absolutely! Choose from multiple themes (Dark, Light, Neon, Glass),
-            customize your avatar, bio, social links, and more from your
-            dashboard.
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Banner */}
+      {/* CTA Section */}
       <section className="lt-cta">
-        <h2>Jumpstart your corner of the internet today</h2>
-        <p>With ShareLinkGan, it&apos;s free and takes less than a minute.</p>
-        <Link href="/register" className="btn">
-          Get started for free
+        <h2>{t("home.hero_title")}</h2>
+        <Link href="/register" className="lt-cta-btn">
+          {t("home.cta_button")}
         </Link>
+        <p>
+          {t("home.already_have_account")}{" "}
+          <Link href="/login" style={{ textDecoration: "underline" }}>
+            {t("home.login")}
+          </Link>
+        </p>
       </section>
 
       {/* Footer */}
       <footer className="lt-footer">
         <div className="lt-footer-grid">
-          <div className="lt-footer-brand">
-            <h3>ShareLinkGan</h3>
-            <p>
-              A link-in-bio tool built for creators. Share everything you are in
-              one simple link.
+          <div className="lt-footer-col">
+            <div className="lt-footer-logo">ShareLinkGan</div>
+            <p style={{ marginTop: 12, opacity: 0.7 }}>
+              {t("home.hero_subtitle")}
             </p>
           </div>
           <div className="lt-footer-col">
-            <h4>Product</h4>
+            <h4>Menu</h4>
             <ul>
               <li>
-                <Link href="/register">Getting Started</Link>
+                <Link href="/login">{t("home.login")}</Link>
               </li>
               <li>
-                <Link href="/login">Log In</Link>
-              </li>
-              <li>
-                <Link href="/register">Sign Up</Link>
-              </li>
-            </ul>
-          </div>
-          <div className="lt-footer-col">
-            <h4>Company</h4>
-            <ul>
-              <li>
-                <Link href="/">About</Link>
-              </li>
-              <li>
-                <Link href="/">Blog</Link>
-              </li>
-              <li>
-                <Link href="/">Careers</Link>
+                <Link href="/register">{t("home.cta_button")}</Link>
               </li>
             </ul>
           </div>
@@ -223,19 +156,16 @@ export default function Home() {
             <h4>Legal</h4>
             <ul>
               <li>
-                <Link href="/privacy">Privacy Policy</Link>
+                <Link href="/terms">{t("footer.terms")}</Link>
               </li>
               <li>
-                <Link href="/terms">Terms of Service</Link>
-              </li>
-              <li>
-                <Link href="/">Cookie Policy</Link>
+                <Link href="/privacy">{t("footer.privacy")}</Link>
               </li>
             </ul>
           </div>
         </div>
         <div className="lt-footer-bottom">
-          <p>© {new Date().getFullYear()} ShareLinkGan. All rights reserved.</p>
+          <p>{t("footer.copyright")}</p>
         </div>
       </footer>
     </div>
