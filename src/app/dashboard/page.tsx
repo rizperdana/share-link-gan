@@ -16,6 +16,8 @@ export default function DashboardPage() {
   // Modal states
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showAppearanceModal, setShowAppearanceModal] = useState(false);
+  const [showSocialsModal, setShowSocialsModal] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
 
   // Form states
@@ -260,6 +262,8 @@ export default function DashboardPage() {
 
     setSaving(false);
     setShowProfileModal(false);
+    setShowAppearanceModal(false);
+    setShowSocialsModal(false);
     fetchData();
   };
 
@@ -328,7 +332,33 @@ export default function DashboardPage() {
               });
               setShowProfileModal(true);
             }}>
-              ✏️ Edit Profile
+              ✏️ Profile
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={() => {
+              setProfileForm({
+                username: profile?.username || '',
+                display_name: profile?.display_name || '',
+                bio: profile?.bio || '',
+                avatar_url: profile?.avatar_url || '',
+                theme: profile?.theme || 'dark',
+                social_links: profile?.social_links || {},
+              });
+              setShowAppearanceModal(true);
+            }}>
+              🎨 Appearance
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={() => {
+              setProfileForm({
+                username: profile?.username || '',
+                display_name: profile?.display_name || '',
+                bio: profile?.bio || '',
+                avatar_url: profile?.avatar_url || '',
+                theme: profile?.theme || 'dark',
+                social_links: profile?.social_links || {},
+              });
+              setShowSocialsModal(true);
+            }}>
+              🔗 Socials
             </button>
             <button className="btn btn-secondary btn-sm" onClick={handleLogout}>
               Logout
@@ -530,11 +560,25 @@ export default function DashboardPage() {
                   onChange={(e) => setProfileForm({ ...profileForm, avatar_url: e.target.value })}
                 />
               </div>
-
-              <div className="dashboard-section" style={{ marginTop: 'var(--space-xl)', marginBottom: 'var(--space-md)' }}>
-                <h2>Appearance</h2>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowProfileModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? <span className="spinner" /> : 'Save Profile'}
+                </button>
               </div>
+            </form>
+          </div>
+        </div>
+      )}
 
+      {/* Appearance Modal */}
+      {showAppearanceModal && (
+        <div className="modal-overlay" onClick={() => setShowAppearanceModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Theme & Appearance</h2>
+            <form onSubmit={saveProfile}>
               <div className="form-group">
                 <label className="form-label" htmlFor="profile-theme">Theme Template</label>
                 <select
@@ -548,11 +592,28 @@ export default function DashboardPage() {
                   <option value="neon">Neon Cipher</option>
                   <option value="glass">Glassmorphism</option>
                 </select>
+                <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Note: You can see full previews of Themes adjusting in real-time in the Mobile Preview pane.</p>
               </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowAppearanceModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-primary" disabled={saving}>
+                  {saving ? <span className="spinner" /> : 'Save Appearance'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
-              <div className="dashboard-section" style={{ marginTop: 'var(--space-xl)', marginBottom: 'var(--space-md)' }}>
-                <h2>Social Links</h2>
-              </div>
+      {/* Socials Modal */}
+      {showSocialsModal && (
+        <div className="modal-overlay" onClick={() => setShowSocialsModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2>Social Links</h2>
+            <form onSubmit={saveProfile}>
+              <p style={{ marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Link your social media profiles to display custom icons below your avatar.</p>
 
               <div className="form-group">
                 <label className="form-label" htmlFor="profile-social-twitter">Twitter / X</label>
@@ -561,7 +622,7 @@ export default function DashboardPage() {
                   type="text"
                   className="form-input"
                   placeholder="https://twitter.com/yourname"
-                  value={profileForm.social_links.twitter || ''}
+                  value={profileForm.social_links?.twitter || ''}
                   onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, twitter: e.target.value } })}
                 />
               </div>
@@ -572,7 +633,7 @@ export default function DashboardPage() {
                   type="text"
                   className="form-input"
                   placeholder="https://instagram.com/yourname"
-                  value={profileForm.social_links.instagram || ''}
+                  value={profileForm.social_links?.instagram || ''}
                   onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, instagram: e.target.value } })}
                 />
               </div>
@@ -583,7 +644,7 @@ export default function DashboardPage() {
                   type="text"
                   className="form-input"
                   placeholder="https://github.com/yourname"
-                  value={profileForm.social_links.github || ''}
+                  value={profileForm.social_links?.github || ''}
                   onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, github: e.target.value } })}
                 />
               </div>
@@ -594,16 +655,16 @@ export default function DashboardPage() {
                   type="text"
                   className="form-input"
                   placeholder="https://linkedin.com/in/yourname"
-                  value={profileForm.social_links.linkedin || ''}
+                  value={profileForm.social_links?.linkedin || ''}
                   onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, linkedin: e.target.value } })}
                 />
               </div>
               <div className="modal-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowProfileModal(false)}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowSocialsModal(false)}>
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={saving}>
-                  {saving ? <span className="spinner" /> : 'Save Profile'}
+                  {saving ? <span className="spinner" /> : 'Save Social Links'}
                 </button>
               </div>
             </form>

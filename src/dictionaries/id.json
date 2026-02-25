@@ -1,0 +1,27 @@
+{
+    "home": {
+        "title": "Share Link Gan",
+        "tagline": "Satu tautan untuk semuanya. Hubungkan audiens Anda ke semua konten Anda hanya dengan satu klik. Sangat dapat dipersonalisasi, gratis selamanya.",
+        "claim_button": "Klaim Tautan Anda Sekarang",
+        "login_button": "Masuk ke Dasbor",
+        "features_theme": "Tema Premium",
+        "features_theme_desc": "Sesuaikan merek Anda dengan sempurna menggunakan prasetel menakjubkan seperti Glassmorphism, Neon, dan Minimal.",
+        "features_unlimited": "Tautan Tak Terbatas",
+        "features_unlimited_desc": "Tambahkan tautan sebanyak yang Anda inginkan. Sematkan thumbnail, ikon sosial, dan tata ulang dengan sempurna.",
+        "features_fast": "Sangat Cepat",
+        "features_fast_desc": "Dibangun di Next.js 14 dan infrastruktur edge untuk waktu pemuatan instan secara global.",
+        "footer": "Terinspirasi oleh Linktree. Diterapkan di"
+    },
+    "dashboard": {
+        "title": "Dasbor",
+        "edit_profile": "Profil",
+        "appearance": "Penampilan",
+        "socials": "Sosial",
+        "logout": "Keluar",
+        "your_links": "Tautan Anda",
+        "add_link": "Tambah Tautan",
+        "no_links": "Belum ada tautan. Tambahkan tautan pertama Anda!",
+        "save": "Simpan",
+        "cancel": "Batal"
+    }
+}

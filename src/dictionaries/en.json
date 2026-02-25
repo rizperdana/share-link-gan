@@ -1,0 +1,27 @@
+{
+    "home": {
+        "title": "Share Link Gan",
+        "tagline": "One link to rule them all. Connect your audiences to all of your content with just one click. Highly personalizable, forever free.",
+        "claim_button": "Claim your Link Now",
+        "login_button": "Login to Dashboard",
+        "features_theme": "Premium Themes",
+        "features_theme_desc": "Match your brand perfectly with stunning presets like Glassmorphism, Neon, and Minimal.",
+        "features_unlimited": "Unlimited Links",
+        "features_unlimited_desc": "Add as many links as you want. Embed thumbnails, social icons, and reorder them flawlessly.",
+        "features_fast": "Lightning Fast",
+        "features_fast_desc": "Built on Next.js 14 and edge infrastructure for instant load times globally.",
+        "footer": "Inspired by Linktree. Deployed on"
+    },
+    "dashboard": {
+        "title": "Dashboard",
+        "edit_profile": "Profile",
+        "appearance": "Appearance",
+        "socials": "Socials",
+        "logout": "Logout",
+        "your_links": "Your Links",
+        "add_link": "Add Link",
+        "no_links": "No links yet. Add your first link!",
+        "save": "Save",
+        "cancel": "Cancel"
+    }
+}
