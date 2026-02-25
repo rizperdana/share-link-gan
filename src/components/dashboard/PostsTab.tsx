@@ -19,6 +19,11 @@ export default function PostsTab() {
     image_url: "",
     link_id: "",
     is_published: true,
+    scheduled_start: "",
+    scheduled_end: "",
+    tags: "",
+    is_private: false,
+    private_pin: "",
   });
 
   const supabase = createClient();
@@ -63,6 +68,11 @@ export default function PostsTab() {
       image_url: "",
       link_id: "",
       is_published: true,
+      scheduled_start: "",
+      scheduled_end: "",
+      tags: "",
+      is_private: false,
+      private_pin: "",
     });
     setShowModal(true);
   };
@@ -75,6 +85,11 @@ export default function PostsTab() {
       image_url: post.image_url || "",
       link_id: post.link_id || "",
       is_published: post.is_published,
+      scheduled_start: post.scheduled_start ? new Date(post.scheduled_start).toISOString().slice(0, 16) : "",
+      scheduled_end: post.scheduled_end ? new Date(post.scheduled_end).toISOString().slice(0, 16) : "",
+      tags: post.tags ? post.tags.join(", ") : "",
+      is_private: post.is_private || false,
+      private_pin: post.private_pin || "",
     });
     setShowModal(true);
   };
@@ -94,6 +109,11 @@ export default function PostsTab() {
       image_url: form.image_url || null,
       link_id: form.link_id || null,
       is_published: form.is_published,
+      scheduled_start: form.scheduled_start ? new Date(form.scheduled_start).toISOString() : null,
+      scheduled_end: form.scheduled_end ? new Date(form.scheduled_end).toISOString() : null,
+      tags: form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
+      is_private: form.is_private,
+      private_pin: form.is_private ? form.private_pin || null : null,
     };
 
     if (editing) {
@@ -187,6 +207,16 @@ export default function PostsTab() {
                       {new Date(post.created_at).toLocaleDateString()} ·{" "}
                       {post.is_published ? "Published" : "Draft"}
                     </span>
+                    {post.is_private && <span style={{ marginLeft: 8, fontSize: "0.75rem", background: "var(--bg-card)", padding: "2px 6px", borderRadius: 4, color: "var(--warning)" }}>🔒 Private</span>}
+                    {post.tags && post.tags.length > 0 && (
+                      <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+                        {post.tags.map(tag => (
+                          <span key={tag} style={{ fontSize: "0.7rem", background: "var(--purple)", color: "white", padding: "2px 6px", borderRadius: 4 }}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   <div style={{ display: "flex", gap: 8 }}>
                     <button
@@ -272,7 +302,7 @@ export default function PostsTab() {
                 <ImageUpload
                   currentUrl={form.image_url}
                   onUpload={(url) => setForm({ ...form, image_url: url })}
-                  bucket="avatars"
+                  bucket="sharelinkgan_bucket"
                   folder="posts"
                   shape="square"
                   size={80}
@@ -307,6 +337,59 @@ export default function PostsTab() {
                   />
                   <span>Publish immediately</span>
                 </label>
+              </div>
+
+              <div style={{ display: "flex", gap: 16 }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Schedule Start</label>
+                  <input
+                    type="datetime-local"
+                    className="form-input"
+                    value={form.scheduled_start}
+                    onChange={(e) => setForm({ ...form, scheduled_start: e.target.value })}
+                  />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Schedule End</label>
+                  <input
+                    type="datetime-local"
+                    className="form-input"
+                    value={form.scheduled_end}
+                    onChange={(e) => setForm({ ...form, scheduled_end: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Tags (comma separated)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="news, update, event"
+                  value={form.tags}
+                  onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group" style={{ background: "var(--bg-card)", padding: 16, borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                <label className="toggle-label" style={{ marginBottom: form.is_private ? 12 : 0 }}>
+                  <input
+                    type="checkbox"
+                    checked={form.is_private}
+                    onChange={(e) => setForm({ ...form, is_private: e.target.checked })}
+                  />
+                  <span>Private Post (Require PIN to view)</span>
+                </label>
+                {form.is_private && (
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter Secret PIN"
+                    value={form.private_pin}
+                    onChange={(e) => setForm({ ...form, private_pin: e.target.value })}
+                    required
+                  />
+                )}
               </div>
               <div className="modal-actions">
                 <button

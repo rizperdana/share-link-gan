@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useTranslation } from "@/lib/i18n";
 import LanguageSelector from "@/components/LanguageSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -14,7 +15,8 @@ export default function Home() {
         <div className="lt-nav-logo">
           <Link href="/">ShareLinkGan</Link>
         </div>
-        <div className="lt-nav-actions">
+        <div className="lt-nav-actions" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <ThemeToggle />
           <LanguageSelector />
           <Link href="/login" className="lt-nav-login">
             {t("home.login")}

@@ -11,10 +11,12 @@ import LinkForm from "@/components/dashboard/LinkForm";
 import AnalyticsTab from "@/components/dashboard/AnalyticsTab";
 import PostsTab from "@/components/dashboard/PostsTab";
 import SubscribersTab from "@/components/dashboard/SubscribersTab";
+import ShopTab from "@/components/dashboard/ShopTab"; // Added this import
 import DOMPurify from "dompurify";
 import Image from "next/image";
 import { useTranslation } from "@/lib/i18n";
 import LanguageSelector from "@/components/LanguageSelector";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function DashboardPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -27,7 +29,7 @@ export default function DashboardPage() {
   } | null>(null);
 
   // Modal and Tab states
-  const [activeTab, setActiveTab] = useState<"links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers">("links");
+  const [activeTab, setActiveTab] = useState<"links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop">("links"); // Added "shop"
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
 
@@ -48,6 +50,7 @@ export default function DashboardPage() {
     display_name: "",
     bio: "",
     avatar_url: "",
+    qris_image_url: "", // Added this field
     theme: "dark",
     social_links: {} as Record<string, string>,
     hide_branding: false,
@@ -98,6 +101,7 @@ export default function DashboardPage() {
           display_name: profileData.display_name || "",
           bio: profileData.bio || "",
           avatar_url: profileData.avatar_url || "",
+          qris_image_url: profileData.qris_image_url || "", // Added this field
           theme: profileData.theme || "dark",
           social_links: profileData.social_links || {},
           hide_branding: profileData.hide_branding || false,
@@ -148,6 +152,7 @@ export default function DashboardPage() {
             display_name: newProfile.display_name,
             bio: "",
             avatar_url: newProfile.avatar_url,
+            qris_image_url: "", // Added this field
             theme: "dark",
             social_links: {},
             hide_branding: false,
@@ -307,6 +312,7 @@ export default function DashboardPage() {
         display_name: profileForm.display_name,
         bio: profileForm.bio,
         avatar_url: profileForm.avatar_url,
+        qris_image_url: profileForm.qris_image_url, // Added this field
         theme: profileForm.theme,
         social_links: profileForm.social_links,
         hide_branding: profileForm.hide_branding,
@@ -383,6 +389,7 @@ export default function DashboardPage() {
       display_name: profile?.display_name || "",
       bio: profile?.bio || "",
       avatar_url: profile?.avatar_url || "",
+      qris_image_url: profile?.qris_image_url || "", // Added this field
       theme: profile?.theme || "dark",
       social_links: profile?.social_links || {},
       hide_branding: profile?.hide_branding || false,
@@ -393,7 +400,7 @@ export default function DashboardPage() {
     });
   };
 
-  const handleTabChange = (tab: "links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers") => {
+  const handleTabChange = (tab: "links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop") => { // Added "shop"
     setActiveTab(tab);
     if (tab === "appearance" || tab === "settings") {
       openProfileForm();
@@ -406,6 +413,7 @@ export default function DashboardPage() {
       <div className="dash-topbar">
         <div className="dash-topbar-logo">ShareLinkGan</div>
         <div className="dash-topbar-actions">
+          <ThemeToggle />
           <LanguageSelector />
           {profile && (
             <a
@@ -475,6 +483,10 @@ export default function DashboardPage() {
               <button className={`dash-nav-item ${activeTab === "subscribers" ? "active" : ""}`} onClick={() => handleTabChange("subscribers")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 <span>{t("dashboard.subscribers")}</span>
+              </button>
+              <button className={`dash-nav-item ${activeTab === "shop" ? "active" : ""}`} onClick={() => handleTabChange("shop")}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                <span>Shop</span>
               </button>
             </div>
           </div>
@@ -596,6 +608,22 @@ export default function DashboardPage() {
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className="dash-card dash-section" style={{ marginTop: 24 }}>
+                  <h2 className="dash-section-title">Support & Payments (QRIS)</h2>
+                  <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>Upload your QRIS barcode so followers can tip you or pay for products.</p>
+                  <div className="form-group-flex">
+                    <ImageUpload
+                      currentUrl={profileForm.qris_image_url}
+                      onUpload={(url) => setProfileForm({ ...profileForm, qris_image_url: url })}
+                      bucket="sharelinkgan_bucket"
+                      folder="qris"
+                      shape="square"
+                      size={150}
+                      label="Upload QRIS"
+                    />
                   </div>
                 </div>
 
@@ -759,6 +787,7 @@ export default function DashboardPage() {
           {activeTab === "analytics" && <AnalyticsTab />}
           {activeTab === "posts" && <PostsTab />}
           {activeTab === "subscribers" && <SubscribersTab />}
+          {activeTab === "shop" && <ShopTab />} {/* Added this conditional render */}
         </div>
 
         {/* Preview Panel */}

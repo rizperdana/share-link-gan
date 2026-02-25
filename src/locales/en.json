@@ -1,53 +1,54 @@
 {
     "home": {
-        "hero_title": "Literally just a database and some divs.",
-        "hero_subtitle": "Why pay 10 bucks a month for a link page? I built this at 3 AM fueled by caffeine. You deserve to have all features for free.",
-        "cta_button": "Just take it it's free",
+        "hero_title": "Literally just a free database mapped to some divs.",
+        "hero_subtitle": "Why are you paying a $10 subscription just to show off links? I coded this at 3 AM running purely on instant coffee fumes. Just take all the features for free, damn it.",
+        "cta_button": "Take It It's Free Dude",
         "claim_prefix": "share-link-gan.vercel.com/",
-        "claim_placeholder": "your_cool_name",
-        "claim_button": "Gimme",
-        "already_have_account": "You've been here before?",
-        "login": "Get in loser"
+        "claim_placeholder": "insert_cool_name_here",
+        "claim_button": "Yeet It",
+        "already_have_account": "Wait, you again?",
+        "login": "Get in Loser"
     },
     "features": {
-        "title": "It's not rocket science",
-        "f1_title": "I added Drag & Drop",
-        "f1_desc": "Because apparently clicking arrows is too much work in 2026. Just yeet the links where you want them.",
-        "f2_title": "Colors and Stuff",
-        "f2_desc": "I centered a div and picked some colors so you don't have to.",
-        "f3_title": "Stalk your visitors",
-        "f3_desc": "Graph goes up = dopamine. Track who clicks what, I don't judge."
+        "title": "It's genuinely not rocket science",
+        "f1_title": "I duct-taped Drag & Drop",
+        "f1_desc": "Who clicks up/down arrows in 2026? I wrote a custom drag and drop handler so you can just yeet your links wherever.",
+        "f2_title": "Aesthetic Colors",
+        "f2_desc": "To make it look like I sort of know what I'm doing, I successfully centered a div so you don't have to touch CSS.",
+        "f3_title": "Stalk your own traffic",
+        "f3_desc": "Line goes up = dopamine. See exactly who's clicking your stuff. Don't worry, I don't judge."
     },
     "auth": {
-        "login_title": "Ah shit, here we go again",
-        "login_subtitle": "Prove you're not a bot",
-        "google_login": "Let Google deal with it",
-        "email_login": "Or type things manually like a boomer",
-        "email_placeholder": "email address",
-        "password_placeholder": "password (don't use 1234)",
-        "sign_in": "Let me in",
-        "no_account": "Who are you?",
-        "signup": "Sign up I guess",
-        "signup_title": "Who wants a free account?",
-        "signup_subtitle": "Give me your data (I promise I won't sell it)",
-        "register": "Gimme access"
+        "login_title": "Oh boy, you're back",
+        "login_subtitle": "Prove you aren't a lost bot real quick",
+        "google_login": "Smash this let Google handle it",
+        "email_login": "Or type manually like an absolute boomer",
+        "email_placeholder": "what_is_your_email_bro@gmail.com",
+        "password_placeholder": "secret password (don't use 123456)",
+        "sign_in": "Let. Me. In.",
+        "no_account": "Wait, you don't have an account?",
+        "signup": "Register I Guess",
+        "signup_title": "Spawn a Free Account",
+        "signup_subtitle": "Hand over your data (relax, I'm too lazy to sell it)",
+        "register": "Full Send Register"
     },
     "dashboard": {
-        "title": "The Control Room",
-        "links": "Your junk",
-        "appearance": "Make it pretty",
-        "settings": "Nerd stuff",
-        "analytics": "Numbers",
-        "posts": "Shitposting",
-        "subscribers": "Your fans",
-        "add_link": "YEET another link",
-        "no_links": "Wow, so empty. Drop a link already.",
-        "view_page": "Stare at your page →",
-        "logout": "I'm out"
+        "title": "The War Room",
+        "links": "Link Dumpster",
+        "appearance": "Profile Makeup",
+        "settings": "Nerd Settings",
+        "analytics": "Scary Numbers",
+        "posts": "Shitposting Zone (WIP)",
+        "subscribers": "Your Weird Cult",
+        "add_link": "YEET ANOTHER LINK",
+        "no_links": "Wow, emptier than my soul. Drop a link already.",
+        "view_page": "Stare at your creation →",
+        "logout": "I'm out",
+        "soon_alert": "Bro chill I haven't coded this yet, I'm still fighting CORS errors"
     },
     "footer": {
-        "copyright": "© 2026 ShareLinkGan. Built at 3 AM.",
-        "terms": "Lawyer stuff",
-        "privacy": "We literally don't care about your data"
+        "copyright": "© 2026 ShareLinkGan. Built at 3 AM while crying over undefined errors.",
+        "terms": "Legal Stuff (be honest, you won't read this)",
+        "privacy": "We literally couldn't care less about your data"
     }
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import type { Profile, Link as LinkType, Post } from "@/lib/types";
+import type { Profile, Link as LinkType, Post, Product } from "@/lib/types";
 import Image from "next/image";
 import DOMPurify from "dompurify";
 
@@ -58,18 +58,23 @@ export default function ProfilePageClient({
   profile,
   links: initialLinks,
   posts,
+  products,
 }: {
   profile: Profile;
   links: LinkType[];
   posts: Post[];
+  products: Product[];
 }) {
   const supabase = createClient();
   const [showSensitive, setShowSensitive] = useState(false);
   const [pinInput, setPinInput] = useState("");
   const [pinLinkId, setPinLinkId] = useState<string | null>(null);
+  const [pinPostId, setPinPostId] = useState<string | null>(null);
+  const [unlockedPosts, setUnlockedPosts] = useState<Set<string>>(new Set());
   const [showSubscribe, setShowSubscribe] = useState(false);
   const [subEmail, setSubEmail] = useState("");
   const [subStatus, setSubStatus] = useState("");
+  const [activeTab, setActiveTab] = useState<"links" | "posts" | "shop" | "support">("links");
 
   // Filter links: active + schedule
   const now = new Date();
@@ -78,6 +83,13 @@ export default function ProfilePageClient({
     if (link.scheduled_start && new Date(link.scheduled_start) > now)
       return false;
     if (link.scheduled_end && new Date(link.scheduled_end) < now) return false;
+    return true;
+  });
+
+  const visiblePosts = posts.filter((post) => {
+    if (!post.is_published) return false;
+    if (post.scheduled_start && new Date(post.scheduled_start) > now) return false;
+    if (post.scheduled_end && new Date(post.scheduled_end) < now) return false;
     return true;
   });
 
@@ -122,6 +134,20 @@ export default function ProfilePageClient({
     }
   };
 
+  const handlePostPinSubmit = () => {
+    const post = visiblePosts.find((p) => p.id === pinPostId);
+    if (post && pinInput === post.private_pin) {
+      setUnlockedPosts((prev) => {
+        const next = new Set(prev);
+        next.add(post.id);
+        return next;
+      });
+      setPinPostId(null);
+    } else {
+      setPinInput("");
+    }
+  };
+
   const handleSubscribe = async () => {
     if (!subEmail || !subEmail.includes("@")) return;
     const { error } = await supabase.from("subscribers").insert({
@@ -135,7 +161,7 @@ export default function ProfilePageClient({
           : error.message,
       );
     } else {
-      setSubStatus("Subscribed! ✅");
+      setSubStatus("Subscribed!");
       setSubEmail("");
     }
     setTimeout(() => setSubStatus(""), 3000);
@@ -152,7 +178,14 @@ export default function ProfilePageClient({
   if (profile.is_sensitive && !showSensitive) {
     return (
       <div className="sensitive-warning">
-        <h2>⚠️ Sensitive Content</h2>
+        <h2 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          Sensitive Content
+        </h2>
         <p>
           This profile has been marked as containing sensitive or adult
           material. You must be 18+ to proceed.
@@ -219,135 +252,186 @@ export default function ProfilePageClient({
             )}
         </div>
 
-        {/* Links */}
-        <div className="profile-links">
-          {visibleLinks.length > 0 ? (
-            visibleLinks.map((link, index) => (
-              <button
-                key={link.id}
-                onClick={() => handleLinkClick(link)}
-                className="profile-link-card"
-                style={{ animationDelay: `${0.15 + index * 0.08}s` }}
-              >
-                {link.is_private && (
-                  <span className="link-badge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                  </span>
-                )}
-                {link.image_url ? (
-                  <div className="profile-link-thumbnail" style={{ position: "relative", width: 40, height: 40, overflow: "hidden", borderRadius: "8px" }}>
-                    <Image
-                      src={link.image_url}
-                      alt={link.title}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      unoptimized
-                    />
-                  </div>
-                ) : (
-                  <span className="profile-link-icon">{link.icon}</span>
-                )}
-                <span className="profile-link-title">{link.title}</span>
-                <span className="profile-link-arrow">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </span>
-              </button>
-            ))
-          ) : (
-            <div
-              style={{
-                textAlign: "center",
-                color: "var(--text-muted)",
-                padding: "var(--space-2xl)",
-              }}
-            >
-              <p>No links yet.</p>
-            </div>
-          )}
+
+        {/* Tab Navigation */}
+        <div className="profile-tabs" style={{ display: "flex", gap: "8px", marginBottom: "24px", overflowX: "auto", paddingBottom: "8px" }}>
+          <button className={`btn ${activeTab === "links" ? "btn-primary" : "btn-secondary"} btn-sm`} onClick={() => setActiveTab("links")} style={{ borderRadius: "100px" }}>Links</button>
+          {visiblePosts.length > 0 && <button className={`btn ${activeTab === "posts" ? "btn-primary" : "btn-secondary"} btn-sm`} onClick={() => setActiveTab("posts")} style={{ borderRadius: "100px" }}>Posts</button>}
+          {products.length > 0 && <button className={`btn ${activeTab === "shop" ? "btn-primary" : "btn-secondary"} btn-sm`} onClick={() => setActiveTab("shop")} style={{ borderRadius: "100px" }}>Shop</button>}
+          {profile.qris_image_url && <button className={`btn ${activeTab === "support" ? "btn-primary" : "btn-secondary"} btn-sm`} onClick={() => setActiveTab("support")} style={{ borderRadius: "100px" }}>Support</button>}
         </div>
 
-        {/* Subscribe */}
-        {profile.enable_subscribers && (
-          <div
-            className="profile-subscribe animate-fade-in"
-            style={{ animationDelay: "0.4s" }}
-          >
-            {!showSubscribe ? (
-              <button
-                className="btn btn-outline"
-                onClick={() => setShowSubscribe(true)}
-                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                Subscribe for updates
-              </button>
-            ) : (
-              <div className="subscribe-form">
-                <input
-                  type="email"
-                  className="form-input"
-                  placeholder="your@email.com"
-                  value={subEmail}
-                  onChange={(e) => setSubEmail(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
-                />
-                <button className="btn btn-primary" onClick={handleSubscribe}>
-                  Subscribe
+        {/* Links */}
+        {activeTab === "links" && (
+          <div className="profile-links animate-fade-in">
+            {visibleLinks.length > 0 ? (
+              visibleLinks.map((link, index) => (
+                <button
+                  key={link.id}
+                  onClick={() => handleLinkClick(link)}
+                  className="profile-link-card"
+                  style={{ animationDelay: `${0.15 + index * 0.08}s` }}
+                >
+                  {link.is_private && (
+                    <span className="link-badge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </span>
+                  )}
+                  {link.image_url ? (
+                    <div className="profile-link-thumbnail" style={{ position: "relative", width: 40, height: 40, overflow: "hidden", borderRadius: "8px" }}>
+                      <Image
+                        src={link.image_url}
+                        alt={link.title}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        unoptimized
+                      />
+                    </div>
+                  ) : (
+                    <span className="profile-link-icon">{link.icon}</span>
+                  )}
+                  <span className="profile-link-title">{link.title}</span>
+                  <span className="profile-link-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
                 </button>
-              </div>
-            )}
-            {subStatus && (
-              <p
+              ))
+            ) : (
+              <div
                 style={{
-                  fontSize: "0.85rem",
-                  marginTop: 8,
                   textAlign: "center",
+                  color: "var(--text-muted)",
+                  padding: "var(--space-2xl)",
                 }}
               >
-                {subStatus}
-              </p>
+                <p>No links yet.</p>
+              </div>
             )}
           </div>
         )}
 
         {/* Posts */}
-        {posts.length > 0 && (
+        {activeTab === "posts" && visiblePosts.length > 0 && (
           <div
             className="profile-posts animate-fade-in"
-            style={{ animationDelay: "0.35s" }}
+            style={{ animationDelay: "0.1s" }}
           >
-            {posts.map((post) => (
-              <div key={post.id} className="profile-post-card">
-                <h3>{post.title}</h3>
-                {post.body && (
-                  <div
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.body) }}
-                    style={{ marginBottom: "12px", color: "var(--text-secondary)" }}
-                  />
-                )}
-                {post.image_url && (
-                  <div style={{ position: "relative", width: "100%", height: "200px", borderRadius: "12px", overflow: "hidden", marginTop: "12px" }}>
-                    <Image
-                      src={post.image_url}
-                      alt={post.title}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      unoptimized
-                    />
+            {visiblePosts.map((post) => {
+              const isLocked = post.is_private && !unlockedPosts.has(post.id);
+
+              return (
+                <div key={post.id} className="profile-post-card" style={{ marginBottom: "16px", padding: "20px", background: "var(--bg-card)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>{post.title}</h3>
+                    {post.is_private && isLocked && (
+                      <span style={{ fontSize: "0.8rem", background: "rgba(255,160,0,0.1)", color: "#ffa000", padding: "4px 8px", borderRadius: "100px", display: "flex", alignItems: "center", gap: "4px" }}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        Private
+                      </span>
+                    )}
                   </div>
-                )}
-                <span
-                  style={{
-                    fontSize: "0.7rem",
-                    opacity: 0.5,
-                    marginTop: 12,
-                    display: "block",
-                  }}
-                >
-                  {new Date(post.created_at).toLocaleDateString()}
-                </span>
+
+                  {isLocked ? (
+                    <div style={{ textAlign: "center", padding: "24px 0" }}>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => { setPinPostId(post.id); setPinInput(""); }}
+                        style={{ borderRadius: "100px" }}
+                      >
+                        Enter PIN to Unlock
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      {post.body && (
+                        <div
+                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.body) }}
+                          style={{ marginBottom: "16px", color: "var(--text-secondary)", lineHeight: "1.6" }}
+                        />
+                      )}
+                      {post.image_url && (
+                        <div style={{ position: "relative", width: "100%", height: "250px", borderRadius: "12px", overflow: "hidden", marginBottom: "16px" }}>
+                          <Image
+                            src={post.image_url}
+                            alt={post.title}
+                            fill
+                            style={{ objectFit: "cover" }}
+                            unoptimized
+                          />
+                        </div>
+                      )}
+                      {post.link_id && (
+                        <button
+                          className="btn btn-outline"
+                          style={{ width: "100%", display: "flex", justifyContent: "center", marginBottom: "16px" }}
+                          onClick={() => {
+                            const l = initialLinks.find(l => l.id === post.link_id);
+                            if(l) window.open(l.url, "_blank");
+                          }}
+                        >
+                          View Attached Link
+                        </button>
+                      )}
+                    </>
+                  )}
+
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border-color)", paddingTop: "12px", marginTop: isLocked ? 0 : "8px" }}>
+                    <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                      {new Date(post.created_at).toLocaleDateString()}
+                    </span>
+                    {post.tags && post.tags.length > 0 && (
+                      <div style={{ display: "flex", gap: "6px" }}>
+                        {post.tags.map(tag => (
+                          <span key={tag} style={{ fontSize: "0.7rem", color: "var(--accent)", background: "rgba(139, 92, 246, 0.1)", padding: "2px 8px", borderRadius: "100px" }}>
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Shop */}
+        {activeTab === "shop" && products.length > 0 && (
+          <div className="profile-shop animate-fade-in" style={{ animationDelay: "0.1s" }}>
+            <div style={{ display: "grid", gap: "16px", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))" }}>
+              {products.map(prod => (
+                <div key={prod.id} className="dash-card profile-product-card" style={{ padding: 12, display: "flex", flexDirection: "column" }}>
+                  {prod.image_url && (
+                    <div style={{ position: "relative", width: "100%", aspectRatio: "1/1", borderRadius: "var(--radius-sm)", overflow: "hidden", marginBottom: 12 }}>
+                      <Image src={prod.image_url} alt={prod.title} fill style={{ objectFit: "cover" }} unoptimized />
+                    </div>
+                  )}
+                  <h3 style={{ fontWeight: 600, fontSize: "1rem", color: "var(--text-primary)", marginBottom: 4 }}>{prod.title}</h3>
+                  <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: 16, flex: 1 }}>{prod.description}</p>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "auto" }}>
+                    <span style={{ fontWeight: 700, color: "var(--green)" }}>Rp {prod.price.toLocaleString("id-ID")}</span>
+                    {prod.checkout_link ? (
+                      <a href={prod.checkout_link} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">Buy Now</a>
+                    ) : (
+                      <button className="btn btn-primary btn-sm" onClick={() => setActiveTab("support")}>Pay via QRIS</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Support / QRIS */}
+        {activeTab === "support" && profile.qris_image_url && (
+          <div className="profile-support animate-fade-in" style={{ animationDelay: "0.1s", textAlign: "center" }}>
+            <div className="dash-card" style={{ padding: "32px 24px", display: "inline-block", width: "100%", maxWidth: 400 }}>
+              <h2 style={{ fontSize: "1.5rem", marginBottom: "8px", color: "var(--text-primary)" }}>Support the Creator</h2>
+              <p style={{ color: "var(--text-muted)", marginBottom: "24px", fontSize: "0.9rem" }}>Scan this QRIS code to send a tip or pay for products.</p>
+              <div style={{ background: "white", padding: "16px", borderRadius: "var(--radius-md)", display: "inline-block" }}>
+                <img src={profile.qris_image_url} alt="QRIS Barcode" style={{ width: "100%", maxWidth: 300, height: "auto" }} />
               </div>
-            ))}
+            </div>
           </div>
         )}
 
@@ -407,6 +491,42 @@ export default function ProfilePageClient({
                 Cancel
               </button>
               <button className="btn btn-primary" onClick={handlePinSubmit}>
+                Unlock
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Post PIN Modal */}
+      {pinPostId && (
+        <div className="modal-overlay" onClick={() => setPinPostId(null)}>
+          <div
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: 360 }}
+          >
+            <h2>🔒 Private Post</h2>
+            <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
+              Enter the PIN to read this post.
+            </p>
+            <input
+              type="password"
+              className="form-input"
+              placeholder="Enter PIN"
+              value={pinInput}
+              onChange={(e) => setPinInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handlePostPinSubmit()}
+              autoFocus
+            />
+            <div className="modal-actions">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setPinPostId(null)}
+              >
+                Cancel
+              </button>
+              <button className="btn btn-primary" onClick={handlePostPinSubmit}>
                 Unlock
               </button>
             </div>

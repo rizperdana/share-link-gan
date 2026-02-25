@@ -59,7 +59,15 @@ export default async function ProfilePage({ params }: PageProps) {
     .order("created_at", { ascending: false })
     .limit(10);
 
+  const { data: products } = await supabase
+    .from("products")
+    .select("*")
+    .eq("profile_id", profile.id)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+
   return (
-    <ProfileClient profile={profile} links={links || []} posts={posts || []} />
+    <ProfileClient profile={profile} links={links || []} posts={posts || []} products={products || []} />
   );
 }

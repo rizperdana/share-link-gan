@@ -24,6 +24,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/components/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,10 +35,18 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${spaceMono.variable} ${outfit.variable}`}
+      suppressHydrationWarning
     >
       <body>
-        {children}
-        <Analytics />
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

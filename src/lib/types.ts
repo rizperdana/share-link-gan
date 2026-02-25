@@ -11,6 +11,7 @@ export interface Profile {
   custom_footer_url?: string | null;
   is_sensitive?: boolean;
   enable_subscribers?: boolean;
+  qris_image_url?: string | null;
   created_at: string;
 }
 
@@ -58,5 +59,23 @@ export interface Post {
   image_url?: string | null;
   link_id?: string | null;
   is_published: boolean;
+  scheduled_start?: string | null;
+  scheduled_end?: string | null;
+  tags?: string[];
+  is_private?: boolean;
+  private_pin?: string | null;
+  created_at: string;
+}
+
+export interface Product {
+  id: string;
+  profile_id: string;
+  title: string;
+  description?: string | null;
+  price: number;
+  image_url?: string | null;
+  checkout_link?: string | null;
+  is_active: boolean;
+  sort_order: number;
   created_at: string;
 }
