@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { IconShoppingBag, IconPen, IconTrash, IconPlus, IconWhatsapp } from "@/components/Icons";
 import type { Product } from "@/lib/types";
 
 export default function ShopTab() {
@@ -18,11 +19,14 @@ export default function ShopTab() {
     price: 0,
     image_url: "",
     checkout_link: "",
+    category: "general",
     is_active: true,
   });
 
   const supabase = createClient();
   const router = useRouter();
+
+  const categories = ["general", "digital", "physical", "service", "food", "fashion", "other"];
 
   const fetchData = useCallback(async () => {
     const {
@@ -56,6 +60,7 @@ export default function ShopTab() {
       price: 0,
       image_url: "",
       checkout_link: "",
+      category: "general",
       is_active: true,
     });
     setShowModal(true);
@@ -69,6 +74,7 @@ export default function ShopTab() {
       price: product.price,
       image_url: product.image_url || "",
       checkout_link: product.checkout_link || "",
+      category: product.category || "general",
       is_active: product.is_active,
     });
     setShowModal(true);
@@ -89,6 +95,7 @@ export default function ShopTab() {
       price: form.price,
       image_url: form.image_url || null,
       checkout_link: form.checkout_link || null,
+      category: form.category || "general",
       is_active: form.is_active,
     };
 
@@ -121,10 +128,10 @@ export default function ShopTab() {
     <>
       <div className="animate-fade-in-up">
         <div className="dashboard-header">
-          <h1>🛍️ Shop Products</h1>
+          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}><IconShoppingBag size={24} /> Shop Products</h1>
           <div className="dashboard-nav">
-            <button className="btn btn-primary btn-sm" onClick={openAdd}>
-              + Add Product
+            <button className="btn btn-primary btn-sm" onClick={openAdd} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <IconPlus size={16} /> Add Product
             </button>
           </div>
         </div>
@@ -150,7 +157,7 @@ export default function ShopTab() {
               color: "var(--gray-400)",
             }}
           >
-            <p style={{ fontSize: "2.5rem", marginBottom: 8 }}>🛍️</p>
+            <div style={{ marginBottom: 8, color: "var(--gray-400)" }}><IconShoppingBag size={48} /></div>
             <p>
               No products yet. Add physical or digital products to sell to your audience.
             </p>
@@ -172,6 +179,11 @@ export default function ShopTab() {
                     }}
                   />
                 )}
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                  <span style={{ fontSize: "0.7rem", background: "var(--accent)", color: "white", padding: "2px 8px", borderRadius: "100px", textTransform: "capitalize" }}>
+                    {prod.category || "general"}
+                  </span>
+                </div>
                 <h3 style={{ fontWeight: 600, fontSize: "1.1rem", marginBottom: 4 }}>
                   {prod.title}
                 </h3>
@@ -197,14 +209,14 @@ export default function ShopTab() {
                       onClick={() => openEdit(prod)}
                       style={{ padding: "4px 8px" }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+                      <IconPen size={14} />
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => deleteProduct(prod.id)}
                       style={{ padding: "4px 8px" }}
                     >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                      <IconTrash size={14} />
                     </button>
                   </div>
                 </div>
@@ -231,8 +243,8 @@ export default function ShopTab() {
                   required
                 />
               </div>
-              <div className="form-group" style={{ display: "flex", gap: 16 }}>
-                <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", gap: 16 }}>
+                <div className="form-group" style={{ flex: 1 }}>
                   <label className="form-label">Price (IDR)</label>
                   <input
                     type="number"
@@ -243,6 +255,18 @@ export default function ShopTab() {
                     onChange={(e) => setForm({ ...form, price: parseFloat(e.target.value) || 0 })}
                     required
                   />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label">Category</label>
+                  <select
+                    className="form-input"
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  >
+                    {categories.map(c => (
+                      <option key={c} value={c} style={{ textTransform: "capitalize" }}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
               <div className="form-group">
@@ -277,10 +301,8 @@ export default function ShopTab() {
                   value={form.checkout_link}
                   onChange={(e) => setForm({ ...form, checkout_link: e.target.value })}
                 />
-                <small style={{ color: "var(--text-muted)", marginTop: 4, display: "block" }}>
-                  If left empty, buyers will be instructed to pay via QRIS and contact you.
-                </small>
               </div>
+
 
               <div className="modal-actions">
                 <button

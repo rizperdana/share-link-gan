@@ -164,3 +164,87 @@ CREATE POLICY "Users can update own posts"
 CREATE POLICY "Users can delete own posts"
   ON posts FOR DELETE USING (auth.uid() = profile_id);
 
+-- ============================================
+-- Phase 6: Products / Shop
+-- ============================================
+CREATE TABLE IF NOT EXISTS products (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  price NUMERIC NOT NULL DEFAULT 0,
+  image_url TEXT,
+  checkout_link TEXT,
+  whatsapp_number TEXT,
+  category TEXT DEFAULT 'general',
+  is_active BOOLEAN DEFAULT true,
+  sort_order INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Active products viewable by everyone"
+  ON products FOR SELECT USING (is_active = true OR auth.uid() = profile_id);
+
+CREATE POLICY "Users can manage own products"
+  ON products FOR INSERT WITH CHECK (auth.uid() = profile_id);
+
+CREATE POLICY "Users can update own products"
+  ON products FOR UPDATE USING (auth.uid() = profile_id);
+
+CREATE POLICY "Users can delete own products"
+  ON products FOR DELETE USING (auth.uid() = profile_id);
+
+CREATE INDEX IF NOT EXISTS idx_products_profile ON products(profile_id, sort_order);
+
+-- ============================================
+-- Phase 7: QRIS & Additional Columns
+-- ============================================
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS qris_image_url TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS donation_link TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bg_image_url TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS font_heading TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS font_body TEXT;
+
+-- Posts scheduling & privacy
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS scheduled_start TIMESTAMPTZ;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS scheduled_end TIMESTAMPTZ;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS is_private BOOLEAN DEFAULT false;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS private_pin TEXT;
+
+-- ============================================
+-- Phase 8: Storage Policies
+-- ============================================
+
+-- 1. Ensure the bucket exists and is public
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('sharelinkgan_bucket', 'sharelinkgan_bucket', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- 2. Clean up any previous confusing policies
+DROP POLICY IF EXISTS "Public view access" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload files" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can update their files" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can delete their files" ON storage.objects;
+
+-- 3. Create extremely robust and standard policies
+CREATE POLICY "Public Object View"
+  ON storage.objects FOR SELECT
+  USING (bucket_id = 'sharelinkgan_bucket');
+
+CREATE POLICY "Authenticated users can upload objects"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (bucket_id = 'sharelinkgan_bucket');
+
+CREATE POLICY "Authenticated users can update objects"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (bucket_id = 'sharelinkgan_bucket');
+
+CREATE POLICY "Authenticated users can delete objects"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (bucket_id = 'sharelinkgan_bucket');

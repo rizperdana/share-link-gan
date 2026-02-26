@@ -12,6 +12,10 @@ export interface Profile {
   is_sensitive?: boolean;
   enable_subscribers?: boolean;
   qris_image_url?: string | null;
+  donation_link?: string | null;
+  bg_image_url?: string | null;
+  font_heading?: string | null;
+  font_body?: string | null;
   created_at: string;
 }
 
@@ -75,6 +79,8 @@ export interface Product {
   price: number;
   image_url?: string | null;
   checkout_link?: string | null;
+  whatsapp_number?: string | null;
+  category?: string | null;
   is_active: boolean;
   sort_order: number;
   created_at: string;

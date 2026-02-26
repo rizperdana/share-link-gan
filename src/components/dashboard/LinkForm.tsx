@@ -103,7 +103,7 @@ export default function LinkForm({ initialData, onSave, onCancel, saving }: Link
           <ImageUpload
             currentUrl={form.image_url}
             onUpload={(url) => setForm({ ...form, image_url: url })}
-            bucket="avatars"
+            bucket="sharelinkgan_bucket"
             folder="thumbnails"
             shape="square"
             size={64}

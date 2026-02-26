@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { IconFileText, IconPen, IconTrash, IconLock, IconPlus } from "@/components/Icons";
 import type { Post, Link as LinkType } from "@/lib/types";
 
 export default function PostsTab() {
@@ -145,10 +146,10 @@ export default function PostsTab() {
     <>
       <div className="animate-fade-in-up">
         <div className="dashboard-header">
-          <h1>📝 Posts</h1>
+          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}><IconFileText size={24} /> Posts</h1>
           <div className="dashboard-nav">
-            <button className="btn btn-primary btn-sm" onClick={openAdd}>
-              + New Post
+            <button className="btn btn-primary btn-sm" onClick={openAdd} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+              <IconPlus size={16} /> New Post
             </button>
           </div>
         </div>
@@ -174,7 +175,7 @@ export default function PostsTab() {
               color: "var(--gray-400)",
             }}
           >
-            <p style={{ fontSize: "2.5rem", marginBottom: 8 }}>📝</p>
+            <div style={{ marginBottom: 8, color: "var(--gray-400)" }}><IconFileText size={48} /></div>
             <p>
               No posts yet. Create a post to share updates with your audience.
             </p>
@@ -207,7 +208,7 @@ export default function PostsTab() {
                       {new Date(post.created_at).toLocaleDateString()} ·{" "}
                       {post.is_published ? "Published" : "Draft"}
                     </span>
-                    {post.is_private && <span style={{ marginLeft: 8, fontSize: "0.75rem", background: "var(--bg-card)", padding: "2px 6px", borderRadius: 4, color: "var(--warning)" }}>🔒 Private</span>}
+                    {post.is_private && <span style={{ marginLeft: 8, fontSize: "0.75rem", background: "var(--bg-card)", padding: "2px 6px", borderRadius: 4, color: "var(--warning)", display: "inline-flex", alignItems: "center", gap: "4px" }}><IconLock size={12} /> Private</span>}
                     {post.tags && post.tags.length > 0 && (
                       <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
                         {post.tags.map(tag => (
@@ -228,14 +229,16 @@ export default function PostsTab() {
                     <button
                       className="btn btn-secondary btn-sm"
                       onClick={() => openEdit(post)}
+                      style={{ padding: "6px 8px" }}
                     >
-                      ✏️
+                      <IconPen size={14} />
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
                       onClick={() => deletePost(post.id)}
+                      style={{ padding: "6px 8px" }}
                     >
-                      🗑️
+                      <IconTrash size={14} />
                     </button>
                   </div>
                 </div>

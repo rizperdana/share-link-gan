@@ -11,7 +11,10 @@ import LinkForm from "@/components/dashboard/LinkForm";
 import AnalyticsTab from "@/components/dashboard/AnalyticsTab";
 import PostsTab from "@/components/dashboard/PostsTab";
 import SubscribersTab from "@/components/dashboard/SubscribersTab";
-import ShopTab from "@/components/dashboard/ShopTab"; // Added this import
+import ShopTab from "@/components/dashboard/ShopTab";
+import QrisTab from "@/components/dashboard/QrisTab";
+import SocialLinksTab from "@/components/dashboard/SocialLinksTab";
+import { THEMES, FONT_MAP, GOOGLE_FONTS_URL } from "@/lib/themes";
 import DOMPurify from "dompurify";
 import Image from "next/image";
 import { useTranslation } from "@/lib/i18n";
@@ -29,7 +32,7 @@ export default function DashboardPage() {
   } | null>(null);
 
   // Modal and Tab states
-  const [activeTab, setActiveTab] = useState<"links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop">("links"); // Added "shop"
+  const [activeTab, setActiveTab] = useState<"links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop" | "qris" | "social">("links");
   const [showLinkForm, setShowLinkForm] = useState(false);
   const [editingLink, setEditingLink] = useState<LinkType | null>(null);
 
@@ -50,7 +53,7 @@ export default function DashboardPage() {
     display_name: "",
     bio: "",
     avatar_url: "",
-    qris_image_url: "", // Added this field
+    qris_image_url: "",
     theme: "dark",
     social_links: {} as Record<string, string>,
     hide_branding: false,
@@ -58,6 +61,9 @@ export default function DashboardPage() {
     custom_footer_url: "",
     is_sensitive: false,
     enable_subscribers: false,
+    bg_image_url: "",
+    font_heading: "",
+    font_body: "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -101,7 +107,7 @@ export default function DashboardPage() {
           display_name: profileData.display_name || "",
           bio: profileData.bio || "",
           avatar_url: profileData.avatar_url || "",
-          qris_image_url: profileData.qris_image_url || "", // Added this field
+          qris_image_url: profileData.qris_image_url || "",
           theme: profileData.theme || "dark",
           social_links: profileData.social_links || {},
           hide_branding: profileData.hide_branding || false,
@@ -109,6 +115,9 @@ export default function DashboardPage() {
           custom_footer_url: profileData.custom_footer_url || "",
           is_sensitive: profileData.is_sensitive || false,
           enable_subscribers: profileData.enable_subscribers || false,
+          bg_image_url: profileData.bg_image_url || "",
+          font_heading: profileData.font_heading || "",
+          font_body: profileData.font_body || "",
         });
       } else {
         // Auto-provision if profile is missing
@@ -152,7 +161,7 @@ export default function DashboardPage() {
             display_name: newProfile.display_name,
             bio: "",
             avatar_url: newProfile.avatar_url,
-            qris_image_url: "", // Added this field
+            qris_image_url: "",
             theme: "dark",
             social_links: {},
             hide_branding: false,
@@ -160,6 +169,9 @@ export default function DashboardPage() {
             custom_footer_url: "",
             is_sensitive: false,
             enable_subscribers: false,
+            bg_image_url: "",
+            font_heading: "",
+            font_body: "",
           });
         }
       }
@@ -312,7 +324,7 @@ export default function DashboardPage() {
         display_name: profileForm.display_name,
         bio: profileForm.bio,
         avatar_url: profileForm.avatar_url,
-        qris_image_url: profileForm.qris_image_url, // Added this field
+        qris_image_url: profileForm.qris_image_url,
         theme: profileForm.theme,
         social_links: profileForm.social_links,
         hide_branding: profileForm.hide_branding,
@@ -320,6 +332,9 @@ export default function DashboardPage() {
         custom_footer_url: profileForm.custom_footer_url || null,
         is_sensitive: profileForm.is_sensitive,
         enable_subscribers: profileForm.enable_subscribers,
+        bg_image_url: profileForm.bg_image_url || null,
+        font_heading: profileForm.font_heading || null,
+        font_body: profileForm.font_body || null,
       })
       .eq("id", profile?.id || "");
 
@@ -389,7 +404,7 @@ export default function DashboardPage() {
       display_name: profile?.display_name || "",
       bio: profile?.bio || "",
       avatar_url: profile?.avatar_url || "",
-      qris_image_url: profile?.qris_image_url || "", // Added this field
+      qris_image_url: profile?.qris_image_url || "",
       theme: profile?.theme || "dark",
       social_links: profile?.social_links || {},
       hide_branding: profile?.hide_branding || false,
@@ -397,10 +412,13 @@ export default function DashboardPage() {
       custom_footer_url: profile?.custom_footer_url || "",
       is_sensitive: profile?.is_sensitive || false,
       enable_subscribers: profile?.enable_subscribers || false,
+      bg_image_url: profile?.bg_image_url || "",
+      font_heading: profile?.font_heading || "",
+      font_body: profile?.font_body || "",
     });
   };
 
-  const handleTabChange = (tab: "links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop") => { // Added "shop"
+  const handleTabChange = (tab: "links" | "appearance" | "settings" | "analytics" | "posts" | "subscribers" | "shop" | "qris" | "social") => {
     setActiveTab(tab);
     if (tab === "appearance" || tab === "settings") {
       openProfileForm();
@@ -487,6 +505,14 @@ export default function DashboardPage() {
               <button className={`dash-nav-item ${activeTab === "shop" ? "active" : ""}`} onClick={() => handleTabChange("shop")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                 <span>Shop</span>
+              </button>
+              <button className={`dash-nav-item ${activeTab === "qris" ? "active" : ""}`} onClick={() => handleTabChange("qris")}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><path d="M14 14h2v2h-2z"/><path d="M20 14h2v2h-2z"/><path d="M14 20h2v2h-2z"/><path d="M20 20h2v2h-2z"/><path d="M17 17h2v2h-2z"/></svg>
+                <span>QRIS</span>
+              </button>
+              <button className={`dash-nav-item ${activeTab === "social" ? "active" : ""}`} onClick={() => handleTabChange("social")}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <span>Socials</span>
               </button>
             </div>
           </div>
@@ -611,93 +637,100 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="dash-card dash-section" style={{ marginTop: 24 }}>
-                  <h2 className="dash-section-title">Support & Payments (QRIS)</h2>
-                  <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>Upload your QRIS barcode so followers can tip you or pay for products.</p>
-                  <div className="form-group-flex">
-                    <ImageUpload
-                      currentUrl={profileForm.qris_image_url}
-                      onUpload={(url) => setProfileForm({ ...profileForm, qris_image_url: url })}
-                      bucket="sharelinkgan_bucket"
-                      folder="qris"
-                      shape="square"
-                      size={150}
-                      label="Upload QRIS"
-                    />
-                  </div>
-                </div>
+
 
                 <div className="dash-card dash-section">
                   <h2 className="dash-section-title">Themes</h2>
-                  <div className="theme-grid">
-                    {[
-                      { value: "dark", label: "Dark", bg: "#1a1a2e", bar1: "#e94560", bar2: "#0f3460", bar3: "#533483" },
-                      { value: "light", label: "Light", bg: "#f8f9fa", bar1: "#2d8840", bar2: "#6c63ff", bar3: "#e0e0e0" },
-                      { value: "neon", label: "Neon", bg: "#0a0a14", bar1: "#00ff41", bar2: "#ff00ff", bar3: "#00d4ff" },
-                      { value: "glass", label: "Glass", bg: "linear-gradient(135deg, #667eea, #764ba2)", bar1: "rgba(255,255,255,0.3)", bar2: "rgba(255,255,255,0.2)", bar3: "rgba(255,255,255,0.15)" },
-                    ].map((t) => (
-                      <div
-                        key={t.value}
-                        className={`theme-card ${profileForm.theme === t.value ? "active" : ""}`}
-                        onClick={() => setProfileForm({ ...profileForm, theme: t.value })}
-                      >
-                        <div className="theme-card-preview" style={{ background: t.bg }}>
-                          <div className="theme-card-swatch" style={{ background: t.bar1 }} />
-                          <div className="theme-card-swatch" style={{ background: t.bar2 }} />
-                          <div className="theme-card-swatch" style={{ background: t.bar3 }} />
+                  {(() => {
+                    const cats = [...new Set<string>(THEMES.map(t => t.category))];
+                    return cats.map(cat => (
+                      <div key={cat} style={{ marginBottom: 20 }}>
+                        <h3 style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>{cat}</h3>
+                        <div className="theme-grid">
+                          {THEMES.filter(t => t.category === cat).map(t => (
+                            <div
+                              key={t.value}
+                              className={`theme-card ${profileForm.theme === t.value ? "active" : ""}`}
+                              onClick={() => setProfileForm({ ...profileForm, theme: t.value })}
+                            >
+                              <div className="theme-card-preview" style={{ background: t.bg }}>
+                                <div className="theme-card-swatch" style={{ background: t.bar1 }} />
+                                <div className="theme-card-swatch" style={{ background: t.bar2 }} />
+                                <div className="theme-card-swatch" style={{ background: t.bar3 }} />
+                              </div>
+                              <div className="theme-card-label">{t.label}</div>
+                            </div>
+                          ))}
                         </div>
-                        <div className="theme-card-label">{t.label}</div>
                       </div>
-                    ))}
+                    ));
+                  })()}
+                </div>
+
+                <div className="dash-card dash-section">
+                  <h2 className="dash-section-title">Fonts</h2>
+                  {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+                  <link rel="stylesheet" href={GOOGLE_FONTS_URL} />
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div className="form-group">
+                      <label className="form-label">Heading Font</label>
+                      <select
+                        className="form-input"
+                        value={profileForm.font_heading}
+                        onChange={(e) => setProfileForm({ ...profileForm, font_heading: e.target.value })}
+                      >
+                        <option value="">Theme Default</option>
+                        {Object.entries(FONT_MAP).map(([key, family]) => (
+                          <option key={key} value={key} style={{ fontFamily: family }}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>
+                        ))}
+                      </select>
+                      <div style={{ marginTop: 8, padding: "10px 12px", background: "var(--bg-primary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontFamily: profileForm.font_heading ? FONT_MAP[profileForm.font_heading] : "inherit", fontWeight: 700, fontSize: "1.1rem" }}>
+                        Preview Heading
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Body Font</label>
+                      <select
+                        className="form-input"
+                        value={profileForm.font_body}
+                        onChange={(e) => setProfileForm({ ...profileForm, font_body: e.target.value })}
+                      >
+                        <option value="">Theme Default</option>
+                        {Object.entries(FONT_MAP).map(([key, family]) => (
+                          <option key={key} value={key} style={{ fontFamily: family }}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>
+                        ))}
+                      </select>
+                      <div style={{ marginTop: 8, padding: "10px 12px", background: "var(--bg-primary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontFamily: profileForm.font_body ? FONT_MAP[profileForm.font_body] : "inherit", fontSize: "0.9rem" }}>
+                        Preview body text style
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Social Links</h2>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="profile-social-twitter">Twitter / X</label>
-                    <input
-                      id="profile-social-twitter"
-                      type="text"
-                      className="form-input"
-                      placeholder="https://twitter.com/yourname"
-                      value={profileForm.social_links?.twitter || ""}
-                      onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, twitter: e.target.value } })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="profile-social-instagram">Instagram</label>
-                    <input
-                      id="profile-social-instagram"
-                      type="text"
-                      className="form-input"
-                      placeholder="https://instagram.com/yourname"
-                      value={profileForm.social_links?.instagram || ""}
-                      onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, instagram: e.target.value } })}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="profile-social-github">GitHub</label>
-                    <input
-                      id="profile-social-github"
-                      type="text"
-                      className="form-input"
-                      placeholder="https://github.com/yourname"
-                      value={profileForm.social_links?.github || ""}
-                      onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, github: e.target.value } })}
-                    />
-                  </div>
-                  <div className="form-group" style={{ marginBottom: 0 }}>
-                    <label className="form-label" htmlFor="profile-social-linkedin">LinkedIn</label>
-                    <input
-                      id="profile-social-linkedin"
-                      type="text"
-                      className="form-input"
-                      placeholder="https://linkedin.com/in/yourname"
-                      value={profileForm.social_links?.linkedin || ""}
-                      onChange={(e) => setProfileForm({ ...profileForm, social_links: { ...profileForm.social_links, linkedin: e.target.value } })}
-                    />
-                  </div>
+                  <h2 className="dash-section-title">Custom Background</h2>
+                  <p style={{ color: "var(--text-muted)", marginBottom: 12, fontSize: "0.85rem" }}>
+                    Upload a custom background image. It will overlay on top of your theme's colors.
+                  </p>
+                  {profileForm.bg_image_url && (
+                    <div style={{ marginBottom: 12, position: "relative", borderRadius: "var(--radius-sm)", overflow: "hidden", maxHeight: 160 }}>
+                      <img src={profileForm.bg_image_url} alt="Background" style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: "var(--radius-sm)" }} />
+                      <button
+                        type="button"
+                        className="btn"
+                        onClick={() => setProfileForm({ ...profileForm, bg_image_url: "" })}
+                        style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", color: "white", border: "none", borderRadius: "var(--radius-full)", padding: "4px 12px", fontSize: "0.75rem", cursor: "pointer" }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  <ImageUpload
+                    currentUrl={profileForm.bg_image_url}
+                    onUpload={(url) => setProfileForm({ ...profileForm, bg_image_url: url })}
+                    folder="backgrounds"
+                    label={profileForm.bg_image_url ? "Change Background" : "Upload Background"}
+                  />
                 </div>
 
                 <div className="sticky-save-bar">
@@ -760,7 +793,7 @@ export default function DashboardPage() {
                         checked={profileForm.is_sensitive}
                         onChange={(e) => setProfileForm({ ...profileForm, is_sensitive: e.target.checked })}
                       />
-                      <span>🔞 Mark as sensitive / adult content</span>
+                      <span>Mark as sensitive / adult content</span>
                     </label>
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
@@ -787,13 +820,14 @@ export default function DashboardPage() {
           {activeTab === "analytics" && <AnalyticsTab />}
           {activeTab === "posts" && <PostsTab />}
           {activeTab === "subscribers" && <SubscribersTab />}
-          {activeTab === "shop" && <ShopTab />} {/* Added this conditional render */}
+          {activeTab === "qris" && <QrisTab />}
+          {activeTab === "social" && <SocialLinksTab />}
         </div>
 
         {/* Preview Panel */}
         <div className="dash-preview">
           <div className="mobile-preview-container">
-            <MobilePreview profileForm={profileForm} links={links} />
+            <MobilePreview profile={profileForm as any} links={links} />
           </div>
         </div>
       </div>
