@@ -29,11 +29,30 @@ export function useTranslation() {
         setLocale("id");
       }
     }
+
+    const handleStorage = () => {
+       const saved = localStorage.getItem("app_locale") as Locale;
+       if (saved) setLocale(saved);
+    };
+
+    const handleCustomEvent = (e: Event) => {
+      const event = e as CustomEvent<Locale>;
+      if (event.detail) setLocale(event.detail);
+    }
+
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("localeChange", handleCustomEvent);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("localeChange", handleCustomEvent);
+    };
   }, []);
 
   const changeLocale = useCallback((newLocale: Locale) => {
     setLocale(newLocale);
     localStorage.setItem("app_locale", newLocale);
+    window.dispatchEvent(new CustomEvent("localeChange", { detail: newLocale }));
   }, []);
 
   const t = useCallback(

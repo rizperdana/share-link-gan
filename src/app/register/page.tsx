@@ -105,18 +105,18 @@ export default function RegisterPage() {
           {t("auth.google_login")}
         </button>
 
-        <div className="auth-divider">or</div>
+        <div className="auth-divider">{t("auth.or")}</div>
 
         <form onSubmit={handleRegister}>
           <div className="form-group">
             <label className="form-label" htmlFor="username">
-              Username
+              {t("auth.username_label")}
             </label>
             <input
               id="username"
               type="text"
               className="form-input"
-              placeholder="yourname"
+              placeholder={t("auth.username_placeholder")}
               value={username}
               onChange={(e) =>
                 setUsername(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))
@@ -129,13 +129,13 @@ export default function RegisterPage() {
 
           <div className="form-group">
             <label className="form-label" htmlFor="display-name">
-              Display Name
+              {t("auth.display_name")}
             </label>
             <input
               id="display-name"
               type="text"
               className="form-input"
-              placeholder="Your Name"
+              placeholder={t("auth.display_name_placeholder")}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
@@ -164,7 +164,7 @@ export default function RegisterPage() {
               id="password"
               type="password"
               className="form-input"
-              placeholder="Min 6 characters"
+              placeholder={t("auth.password_min")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

@@ -504,15 +504,15 @@ export default function DashboardPage() {
               </button>
               <button className={`dash-nav-item ${activeTab === "shop" ? "active" : ""}`} onClick={() => handleTabChange("shop")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                <span>Shop</span>
+                <span>{t("dashboard.shop")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "qris" ? "active" : ""}`} onClick={() => handleTabChange("qris")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><path d="M14 14h2v2h-2z"/><path d="M20 14h2v2h-2z"/><path d="M14 20h2v2h-2z"/><path d="M20 20h2v2h-2z"/><path d="M17 17h2v2h-2z"/></svg>
-                <span>QRIS</span>
+                <span>{t("dashboard.qris")}</span>
               </button>
               <button className={`dash-nav-item ${activeTab === "social" ? "active" : ""}`} onClick={() => handleTabChange("social")}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-                <span>Socials</span>
+                <span>{t("dashboard.socials")}</span>
               </button>
             </div>
           </div>
@@ -545,7 +545,7 @@ export default function DashboardPage() {
                   folder="profile"
                   shape="circle"
                   size={80}
-                  label="Avatar"
+                  label={t("dashboard.avatar")}
                 />
                 <div className="dash-profile-info">
                   <h2>{profile?.display_name || profile?.username}</h2>
@@ -592,11 +592,11 @@ export default function DashboardPage() {
           {activeTab === "appearance" && (
             <div className="animate-fade-in-up">
               <div className="dashboard-header">
-                <h1>Appearance</h1>
+                <h1>{t("dashboard.appearance")}</h1>
               </div>
               <form onSubmit={saveProfile}>
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Profile</h2>
+                  <h2 className="dash-section-title">{t("dashboard.profile")}</h2>
                   <div className="form-group-flex">
                     <div style={{ marginRight: 24 }}>
                       <ImageUpload
@@ -606,27 +606,27 @@ export default function DashboardPage() {
                         folder="profile"
                         shape="circle"
                         size={96}
-                        label="Pick an image"
+                        label={t("dashboard.avatar")}
                       />
                     </div>
                     <div style={{ flex: 1 }}>
                       <div className="form-group">
-                        <label className="form-label" htmlFor="profile-display-name">Profile Title</label>
+                        <label className="form-label" htmlFor="profile-display-name">{t("dashboard.profile_title")}</label>
                         <input
                           id="profile-display-name"
                           type="text"
                           className="form-input"
-                          placeholder="Your name"
+                          placeholder={t("dashboard.profile_title_placeholder")}
                           value={profileForm.display_name}
                           onChange={(e) => setProfileForm({ ...profileForm, display_name: e.target.value })}
                         />
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" htmlFor="profile-bio">Bio</label>
+                        <label className="form-label" htmlFor="profile-bio">{t("dashboard.bio")}</label>
                         <textarea
                           id="profile-bio"
                           className="form-input"
-                          placeholder="Tell something about yourself..."
+                          placeholder={t("dashboard.bio_placeholder")}
                           value={profileForm.bio}
                           onChange={(e) => setProfileForm({ ...profileForm, bio: e.target.value })}
                           rows={3}
@@ -640,7 +640,7 @@ export default function DashboardPage() {
 
 
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Themes</h2>
+                  <h2 className="dash-section-title">{t("dashboard.themes")}</h2>
                   {(() => {
                     const cats = [...new Set<string>(THEMES.map(t => t.category))];
                     return cats.map(cat => (
@@ -668,49 +668,49 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Fonts</h2>
+                  <h2 className="dash-section-title">{t("dashboard.fonts")}</h2>
                   {/* eslint-disable-next-line @next/next/no-page-custom-font */}
                   <link rel="stylesheet" href={GOOGLE_FONTS_URL} />
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                     <div className="form-group">
-                      <label className="form-label">Heading Font</label>
+                      <label className="form-label">{t("dashboard.heading_font")}</label>
                       <select
                         className="form-input"
                         value={profileForm.font_heading}
                         onChange={(e) => setProfileForm({ ...profileForm, font_heading: e.target.value })}
                       >
-                        <option value="">Theme Default</option>
+                        <option value="">{t("dashboard.theme_default")}</option>
                         {Object.entries(FONT_MAP).map(([key, family]) => (
                           <option key={key} value={key} style={{ fontFamily: family }}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>
                         ))}
                       </select>
                       <div style={{ marginTop: 8, padding: "10px 12px", background: "var(--bg-primary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontFamily: profileForm.font_heading ? FONT_MAP[profileForm.font_heading] : "inherit", fontWeight: 700, fontSize: "1.1rem" }}>
-                        Preview Heading
+                        {t("dashboard.preview_heading")}
                       </div>
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Body Font</label>
+                      <label className="form-label">{t("dashboard.body_font")}</label>
                       <select
                         className="form-input"
                         value={profileForm.font_body}
                         onChange={(e) => setProfileForm({ ...profileForm, font_body: e.target.value })}
                       >
-                        <option value="">Theme Default</option>
+                        <option value="">{t("dashboard.theme_default")}</option>
                         {Object.entries(FONT_MAP).map(([key, family]) => (
                           <option key={key} value={key} style={{ fontFamily: family }}>{key.charAt(0).toUpperCase() + key.slice(1)}</option>
                         ))}
                       </select>
                       <div style={{ marginTop: 8, padding: "10px 12px", background: "var(--bg-primary)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)", fontFamily: profileForm.font_body ? FONT_MAP[profileForm.font_body] : "inherit", fontSize: "0.9rem" }}>
-                        Preview body text style
+                        {t("dashboard.preview_body")}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Custom Background</h2>
+                  <h2 className="dash-section-title">{t("dashboard.custom_background")}</h2>
                   <p style={{ color: "var(--text-muted)", marginBottom: 12, fontSize: "0.85rem" }}>
-                    Upload a custom background image. It will overlay on top of your theme's colors.
+                    {t("dashboard.custom_bg_desc")}
                   </p>
                   {profileForm.bg_image_url && (
                     <div style={{ marginBottom: 12, position: "relative", borderRadius: "var(--radius-sm)", overflow: "hidden", maxHeight: 160 }}>
@@ -721,7 +721,7 @@ export default function DashboardPage() {
                         onClick={() => setProfileForm({ ...profileForm, bg_image_url: "" })}
                         style={{ position: "absolute", top: 8, right: 8, background: "rgba(0,0,0,0.7)", color: "white", border: "none", borderRadius: "var(--radius-full)", padding: "4px 12px", fontSize: "0.75rem", cursor: "pointer" }}
                       >
-                        Remove
+                        {t("dashboard.remove")}
                       </button>
                     </div>
                   )}
@@ -729,13 +729,13 @@ export default function DashboardPage() {
                     currentUrl={profileForm.bg_image_url}
                     onUpload={(url) => setProfileForm({ ...profileForm, bg_image_url: url })}
                     folder="backgrounds"
-                    label={profileForm.bg_image_url ? "Change Background" : "Upload Background"}
+                    label={profileForm.bg_image_url ? t("dashboard.change_bg") : t("dashboard.upload_bg")}
                   />
                 </div>
 
                 <div className="sticky-save-bar">
                   <button type="submit" className="btn btn-primary" disabled={saving}>
-                    {saving ? <span className="spinner" /> : "Save Appearance"}
+                    {saving ? <span className="spinner" /> : t("dashboard.save_appearance")}
                   </button>
                 </div>
               </form>
@@ -745,18 +745,18 @@ export default function DashboardPage() {
           {activeTab === "settings" && (
             <div className="animate-fade-in-up">
               <div className="dashboard-header">
-                <h1>Settings</h1>
+                <h1>{t("dashboard.settings")}</h1>
               </div>
               <form onSubmit={saveProfile}>
                 <div className="dash-card dash-section">
-                  <h2 className="dash-section-title">Branding</h2>
+                  <h2 className="dash-section-title">{t("dashboard.branding")}</h2>
                   <label className="toggle-label">
                     <input
                       type="checkbox"
                       checked={profileForm.hide_branding}
                       onChange={(e) => setProfileForm({ ...profileForm, hide_branding: e.target.checked })}
                     />
-                    <span>Hide "Powered by ShareLinkGan" footer</span>
+                    <span>{t("dashboard.hide_branding")}</span>
                   </label>
                 </div>
 
@@ -793,7 +793,7 @@ export default function DashboardPage() {
                         checked={profileForm.is_sensitive}
                         onChange={(e) => setProfileForm({ ...profileForm, is_sensitive: e.target.checked })}
                       />
-                      <span>Mark as sensitive / adult content</span>
+                      <span>{t("dashboard.mark_sensitive")}</span>
                     </label>
                   </div>
                   <div className="form-group" style={{ marginBottom: 0 }}>
@@ -803,14 +803,14 @@ export default function DashboardPage() {
                         checked={profileForm.enable_subscribers}
                         onChange={(e) => setProfileForm({ ...profileForm, enable_subscribers: e.target.checked })}
                       />
-                      <span>Allow visitors to subscribe for updates</span>
+                      <span>{t("dashboard.allow_subscribers")}</span>
                     </label>
                   </div>
                 </div>
 
                 <div className="sticky-save-bar">
                   <button type="submit" className="btn btn-primary" disabled={saving}>
-                    {saving ? <span className="spinner" /> : "Save Settings"}
+                    {saving ? <span className="spinner" /> : t("dashboard.save_settings")}
                   </button>
                 </div>
               </form>
@@ -820,6 +820,7 @@ export default function DashboardPage() {
           {activeTab === "analytics" && <AnalyticsTab />}
           {activeTab === "posts" && <PostsTab />}
           {activeTab === "subscribers" && <SubscribersTab />}
+          {activeTab === "shop" && <ShopTab />}
           {activeTab === "qris" && <QrisTab />}
           {activeTab === "social" && <SocialLinksTab />}
         </div>

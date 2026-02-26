@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/lib/i18n";
 import {
   IconInstagram, IconTiktok, IconWhatsapp, IconTelegram,
   IconTwitter, IconFacebook, IconYoutube, IconLinkedin
@@ -27,6 +28,7 @@ export default function SocialLinksTab() {
 
   const supabase = createClient();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const fetchData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -67,9 +69,9 @@ export default function SocialLinksTab() {
     setSaving(false);
 
     if (error) {
-      setMessage({ type: "error", text: "Failed to save: " + error.message });
+      setMessage({ type: "error", text: t("social_tab.fail") + error.message });
     } else {
-      setMessage({ type: "success", text: "Social links updated!" });
+      setMessage({ type: "success", text: t("social_tab.success") });
     }
     setTimeout(() => setMessage(null), 3000);
   };
@@ -93,7 +95,7 @@ export default function SocialLinksTab() {
     <div className="animate-fade-in-up">
       <div className="dashboard-header">
         <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <IconInstagram size={24} /> Social Links
+          <IconInstagram size={24} /> {t("social_tab.title")}
         </h1>
       </div>
 
@@ -105,8 +107,7 @@ export default function SocialLinksTab() {
 
       <div className="dash-card" style={{ padding: "24px", marginBottom: "24px" }}>
         <p style={{ color: "var(--text-muted)", marginBottom: "24px", lineHeight: 1.6 }}>
-          Add your social media profiles here. These icons will appear beautifully at the bottom of your profile page.
-          Just enter your <strong>username</strong> or <strong>phone number</strong>, and we'll handle the links automatically!
+          {t("social_tab.desc")}
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "20px" }}>
@@ -157,7 +158,7 @@ export default function SocialLinksTab() {
         disabled={saving}
         style={{ display: "flex", alignItems: "center", gap: 8 }}
       >
-        {saving ? <span className="spinner" /> : "Save Social Links"}
+        {saving ? <span className="spinner" /> : t("social_tab.save")}
       </button>
 
       <div style={{
@@ -170,11 +171,11 @@ export default function SocialLinksTab() {
         color: "var(--text-muted)",
         lineHeight: 1.6,
       }}>
-        <strong style={{ color: "var(--text-primary)" }}>Pro-Tip:</strong>
+        <strong style={{ color: "var(--text-primary)" }}>{t("social_tab.pro_tip")}</strong>
         <ul style={{ marginTop: 8, paddingLeft: 18 }}>
-          <li>For WhatsApp, use country code e.g. <code>628...</code> instead of <code>08...</code> (no + sign).</li>
-          <li>For other apps, just type your exact username without the `@` symbol unless specified.</li>
-          <li>We only show social icons that you have explicitly filled out.</li>
+          <li>{t("social_tab.pt_1")}</li>
+          <li>{t("social_tab.pt_2")}</li>
+          <li>{t("social_tab.pt_3")}</li>
         </ul>
       </div>
     </div>

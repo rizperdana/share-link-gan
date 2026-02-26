@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { useTranslation } from "@/lib/i18n";
 import { IconShoppingBag, IconPen, IconTrash, IconPlus, IconWhatsapp } from "@/components/Icons";
 import type { Product } from "@/lib/types";
 
@@ -25,6 +26,7 @@ export default function ShopTab() {
 
   const supabase = createClient();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const categories = ["general", "digital", "physical", "service", "food", "fashion", "other"];
 
@@ -128,10 +130,10 @@ export default function ShopTab() {
     <>
       <div className="animate-fade-in-up">
         <div className="dashboard-header">
-          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}><IconShoppingBag size={24} /> Shop Products</h1>
+          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}><IconShoppingBag size={24} /> {t("shop_tab.title")}</h1>
           <div className="dashboard-nav">
             <button className="btn btn-primary btn-sm" onClick={openAdd} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-              <IconPlus size={16} /> Add Product
+              <IconPlus size={16} /> {t("shop_tab.add_new")}
             </button>
           </div>
         </div>
@@ -159,7 +161,7 @@ export default function ShopTab() {
           >
             <div style={{ marginBottom: 8, color: "var(--gray-400)" }}><IconShoppingBag size={48} /></div>
             <p>
-              No products yet. Add physical or digital products to sell to your audience.
+              {t("shop_tab.no_products")}
             </p>
           </div>
         ) : (
@@ -201,7 +203,7 @@ export default function ShopTab() {
                       checked={prod.is_active}
                       onChange={() => toggleActive(prod)}
                     />
-                    <span style={{ fontSize: "0.8rem" }}>{prod.is_active ? "Active" : "Hidden"}</span>
+                    <span style={{ fontSize: "0.8rem" }}>{prod.is_active ? t("shop_tab.active") : t("shop_tab.inactive")}</span>
                   </label>
                   <div style={{ display: "flex", gap: 4 }}>
                     <button
@@ -230,14 +232,14 @@ export default function ShopTab() {
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>{editing ? "Edit Product" : "New Product"}</h2>
+            <h2>{editing ? t("shop_tab.edit_item") : t("shop_tab.new_item")}</h2>
             <form onSubmit={saveProduct}>
               <div className="form-group">
-                <label className="form-label">Title</label>
+                <label className="form-label">{t("shop_tab.item_title")}</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="E-book, Course, Merchandise..."
+                  placeholder={t("shop_tab.title_placeholder")}
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                   required
@@ -245,7 +247,7 @@ export default function ShopTab() {
               </div>
               <div style={{ display: "flex", gap: 16 }}>
                 <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label">Price (IDR)</label>
+                  <label className="form-label">{t("shop_tab.price")}</label>
                   <input
                     type="number"
                     min="0"
@@ -257,7 +259,7 @@ export default function ShopTab() {
                   />
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
-                  <label className="form-label">Category</label>
+                  <label className="form-label">{t("shop_tab.category")}</label>
                   <select
                     className="form-input"
                     value={form.category}
@@ -270,10 +272,10 @@ export default function ShopTab() {
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">Description</label>
+                <label className="form-label">{t("shop_tab.desc")}</label>
                 <textarea
                   className="form-input"
-                  placeholder="What are you selling?"
+                  placeholder={t("shop_tab.desc_placeholder")}
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows={3}
@@ -281,7 +283,7 @@ export default function ShopTab() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Product Image</label>
+                <label className="form-label">{t("shop_tab.image")}</label>
                 <ImageUpload
                   currentUrl={form.image_url}
                   onUpload={(url) => setForm({ ...form, image_url: url })}
@@ -289,15 +291,15 @@ export default function ShopTab() {
                   folder="products"
                   shape="square"
                   size={100}
-                  label="Upload"
+                  label={t("shop_tab.upload")}
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">External Checkout Link (Optional)</label>
+                <label className="form-label">{t("shop_tab.checkout_link")}</label>
                 <input
                   type="url"
                   className="form-input"
-                  placeholder="https://wa.me/... or Shopee link"
+                  placeholder={t("shop_tab.checkout_placeholder")}
                   value={form.checkout_link}
                   onChange={(e) => setForm({ ...form, checkout_link: e.target.value })}
                 />
@@ -310,7 +312,7 @@ export default function ShopTab() {
                   className="btn btn-secondary"
                   onClick={() => setShowModal(false)}
                 >
-                  Cancel
+                  {t("shop_tab.cancel")}
                 </button>
                 <button
                   type="submit"

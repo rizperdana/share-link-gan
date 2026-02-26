@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
+import { useTranslation } from "@/lib/i18n";
 import { IconQris, IconScan, IconHeart, IconExternalLink, IconCopy } from "@/components/Icons";
 
 export default function QrisTab() {
@@ -16,6 +17,7 @@ export default function QrisTab() {
 
   const supabase = createClient();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const fetchData = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -51,20 +53,20 @@ export default function QrisTab() {
 
     setSaving(false);
     if (error) {
-      setMessage({ type: "error", text: "Failed to save: " + error.message });
+      setMessage({ type: "error", text: t("qris_tab.fail") + error.message });
     } else {
-      setMessage({ type: "success", text: "QRIS & donation settings saved!" });
+      setMessage({ type: "success", text: t("qris_tab.success") });
     }
     setTimeout(() => setMessage(null), 3000);
   };
 
   const handleRemoveQris = async () => {
-    if (!confirm("Remove your QRIS image?")) return;
+    if (!confirm(t("qris_tab.remove_confirm"))) return;
     setQrisUrl("");
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("profiles").update({ qris_image_url: null }).eq("id", user.id);
-    setMessage({ type: "success", text: "QRIS image removed" });
+    setMessage({ type: "success", text: t("qris_tab.removed") });
     setTimeout(() => setMessage(null), 3000);
   };
 
@@ -88,7 +90,7 @@ export default function QrisTab() {
     <div className="animate-fade-in-up">
       <div className="dashboard-header">
         <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <IconQris size={24} /> QRIS & Donations
+          <IconQris size={24} /> {t("qris_tab.title")}
         </h1>
       </div>
 
@@ -102,10 +104,10 @@ export default function QrisTab() {
       <div className="dash-card" style={{ padding: 24, marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <IconScan size={20} />
-          <h2 style={{ fontWeight: 700, fontSize: "1.1rem" }}>QRIS Code</h2>
+          <h2 style={{ fontWeight: 700, fontSize: "1.1rem" }}>{t("qris_tab.qris_code")}</h2>
         </div>
         <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: 20 }}>
-          Upload your QRIS barcode image. Visitors can scan it with any e-wallet (GoPay, OVO, DANA, ShopeePay, etc.) or banking app to send tips or payments.
+          {t("qris_tab.qris_desc")}
         </p>
 
         <div style={{ display: "flex", gap: 24, alignItems: "flex-start", flexWrap: "wrap" }}>
@@ -117,7 +119,7 @@ export default function QrisTab() {
               folder="qris"
               shape="square"
               size={180}
-              label="Upload QRIS"
+              label={t("qris_tab.upload")}
             />
           </div>
 
@@ -143,14 +145,14 @@ export default function QrisTab() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    QRIS Active
+                    {t("qris_tab.active")}
                   </div>
                   <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                    Your QRIS code will appear on your profile&apos;s &quot;Support&quot; tab
+                    {t("qris_tab.active_desc")}
                   </p>
                 </div>
                 <button className="btn btn-danger btn-sm" onClick={handleRemoveQris} style={{ alignSelf: "flex-start" }}>
-                  Remove QRIS
+                  {t("qris_tab.remove")}
                 </button>
               </div>
             ) : (
@@ -164,9 +166,9 @@ export default function QrisTab() {
                 fontSize: "0.85rem",
               }}>
                 <IconQris size={32} />
-                <p style={{ marginTop: 8, fontWeight: 600 }}>No QRIS uploaded</p>
+                <p style={{ marginTop: 8, fontWeight: 600 }}>{t("qris_tab.no_uploaded")}</p>
                 <p style={{ fontSize: "0.75rem", marginTop: 4 }}>
-                  Get your QRIS from your bank or e-wallet app
+                  {t("qris_tab.get_qris")}
                 </p>
               </div>
             )}
@@ -178,14 +180,14 @@ export default function QrisTab() {
       <div className="dash-card" style={{ padding: 24, marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
           <IconHeart size={20} />
-          <h2 style={{ fontWeight: 700, fontSize: "1.1rem" }}>Donation Link</h2>
+          <h2 style={{ fontWeight: 700, fontSize: "1.1rem" }}>{t("qris_tab.donation_link")}</h2>
         </div>
         <p style={{ color: "var(--text-muted)", fontSize: "0.85rem", marginBottom: 16 }}>
-          Add an external donation link (e.g., Saweria, Trakteer, Ko-fi, PayPal.me). This will appear as a button on your profile&apos;s Support tab alongside QRIS.
+          {t("qris_tab.donation_desc")}
         </p>
 
         <div className="form-group" style={{ marginBottom: 12 }}>
-          <label className="form-label">Donation URL</label>
+          <label className="form-label">{t("qris_tab.donation_url")}</label>
           <div style={{ display: "flex", gap: 8 }}>
             <input
               type="url"
@@ -202,7 +204,7 @@ export default function QrisTab() {
                 style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 4 }}
               >
                 <IconCopy size={14} />
-                {copied ? "Copied!" : "Copy"}
+                {copied ? t("qris_tab.copied") : t("qris_tab.copy")}
               </button>
             )}
           </div>
@@ -230,7 +232,7 @@ export default function QrisTab() {
         disabled={saving}
         style={{ display: "flex", alignItems: "center", gap: 8 }}
       >
-        {saving ? <span className="spinner" /> : "Save Changes"}
+        {saving ? <span className="spinner" /> : t("qris_tab.save")}
       </button>
 
       {/* Info Card */}
@@ -244,12 +246,12 @@ export default function QrisTab() {
         color: "var(--text-muted)",
         lineHeight: 1.6,
       }}>
-        <strong style={{ color: "var(--text-primary)" }}>How it works:</strong>
+        <strong style={{ color: "var(--text-primary)" }}>{t("qris_tab.how_it_works")}</strong>
         <ul style={{ marginTop: 8, paddingLeft: 18 }}>
-          <li>Your QRIS code and donation link appear on the <strong>&quot;Support&quot;</strong> tab of your public profile</li>
-          <li>QRIS works with all Indonesian e-wallets and banking apps</li>
-          <li>Products without a checkout link or WhatsApp number will show a &quot;Pay via QRIS&quot; button</li>
-          <li>Donation links support platforms like Saweria, Trakteer, Ko-fi, etc.</li>
+          <li>{t("qris_tab.hw_1")}</li>
+          <li>{t("qris_tab.hw_2")}</li>
+          <li>{t("qris_tab.hw_3")}</li>
+          <li>{t("qris_tab.hw_4")}</li>
         </ul>
       </div>
     </div>

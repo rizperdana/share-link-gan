@@ -6,6 +6,8 @@ import type { Profile, Link as LinkType, Post, Product } from "@/lib/types";
 import { getThemeFont, FONT_MAP, GOOGLE_FONTS_URL } from "@/lib/themes";
 import Image from "next/image";
 import DOMPurify from "dompurify";
+import LanguageSelector from "@/components/LanguageSelector";
+import { useTranslation } from "@/lib/i18n";
 import {
   IconLock,
   IconArrowRight,
@@ -67,6 +69,7 @@ export default function ProfilePageClient({
   posts: Post[];
   products: Product[];
 }) {
+  const { t } = useTranslation();
   const supabase = createClient();
   const [showSensitive, setShowSensitive] = useState(false);
   const [pinInput, setPinInput] = useState("");
@@ -190,17 +193,16 @@ export default function ProfilePageClient({
             <line x1="12" y1="9" x2="12" y2="13" />
             <line x1="12" y1="17" x2="12.01" y2="17" />
           </svg>
-          Sensitive Content
+          {t("profile_page.sensitive_content")}
         </h2>
         <p>
-          This profile has been marked as containing sensitive or adult
-          material. You must be 18+ to proceed.
+          {t("profile_page.sensitive_desc")}
         </p>
         <button
           className="btn btn-primary"
           onClick={() => setShowSensitive(true)}
         >
-          I understand, continue
+          {t("profile_page.understand")}
         </button>
       </div>
     );
@@ -237,6 +239,11 @@ export default function ProfilePageClient({
       )}
 
       <div className="profile-container">
+        {/* Language Selector */}
+        <div style={{ position: "absolute", top: 16, right: 16, zIndex: 10 }}>
+          <LanguageSelector />
+        </div>
+
         {/* Avatar */}
         <div className="profile-avatar profile-animate" style={{ animationDelay: "0s" }}>
           {profile.avatar_url ? (
@@ -291,7 +298,7 @@ export default function ProfilePageClient({
               onClick={() => setActiveTab("links")}
             >
               <IconLink size={16} />
-              <span>Links</span>
+              <span>{t("profile_page.links_tab")}</span>
             </button>
             {hasPosts && (
               <button
@@ -299,7 +306,7 @@ export default function ProfilePageClient({
                 onClick={() => setActiveTab("posts")}
               >
                 <IconFileText size={16} />
-                <span>Posts</span>
+                <span>{t("profile_page.posts_tab")}</span>
               </button>
             )}
             {hasProducts && (
@@ -308,7 +315,7 @@ export default function ProfilePageClient({
                 onClick={() => setActiveTab("shop")}
               >
                 <IconShoppingBag size={16} />
-                <span>Shop</span>
+                <span>{t("profile_page.shop_tab")}</span>
               </button>
             )}
             {hasSupport && (
@@ -317,7 +324,7 @@ export default function ProfilePageClient({
                 onClick={() => setActiveTab("support")}
               >
                 <IconHeart size={16} />
-                <span>Support</span>
+                <span>{t("profile_page.support_tab")}</span>
               </button>
             )}
           </div>
@@ -506,7 +513,7 @@ export default function ProfilePageClient({
                       <p className="profile-product-desc">{prod.description}</p>
                     )}
                     <div className="profile-product-price">
-                      Rp {prod.price.toLocaleString("id-ID")}
+                      {prod.price === 0 ? t("profile_page.free") : `Rp ${prod.price.toLocaleString("id-ID")}`}
                     </div>
                     <div className="profile-product-actions">
                       {prod.checkout_link ? (
@@ -518,7 +525,7 @@ export default function ProfilePageClient({
                           style={{ flex: 1, justifyContent: "center" }}
                         >
                           <IconExternalLink size={14} />
-                          Buy Now
+                          {t("profile_page.buy_now")}
                         </a>
                       ) : hasQris ? (
                         <button
@@ -527,7 +534,7 @@ export default function ProfilePageClient({
                           style={{ flex: 1, justifyContent: "center" }}
                         >
                           <IconScan size={14} />
-                          Pay via QRIS
+                          {t("profile_page.pay_via_qris")}
                         </button>
                       ) : null}
                     </div>
@@ -545,8 +552,8 @@ export default function ProfilePageClient({
               <div className="profile-qris-card" style={{ marginBottom: hasDonation ? 16 : 0 }}>
                 <div className="profile-qris-header">
                   <IconScan size={24} />
-                  <h2>Scan to Pay</h2>
-                  <p>Scan this QRIS code with any e-wallet or banking app.</p>
+                  <h2>{t("profile_page.scan_to_pay")}</h2>
+                  <p>{t("profile_page.scan_desc")}</p>
                 </div>
                 <div className="profile-qris-image">
                   <img src={profile.qris_image_url!} alt="QRIS Code" />
@@ -567,7 +574,7 @@ export default function ProfilePageClient({
                   style={{ borderRadius: 100, display: "inline-flex", alignItems: "center", gap: 8, fontSize: "1rem", padding: "14px 32px" }}
                 >
                   <IconHeart size={18} />
-                  Send a Donation
+                  {t("profile_page.donate")}
                 </a>
               </div>
             )}
@@ -588,7 +595,7 @@ export default function ProfilePageClient({
                   onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
                 />
                 <button className="btn btn-primary btn-sm" onClick={handleSubscribe}>
-                  Subscribe
+                  {t("profile_page.subscribe")}
                 </button>
                 {subStatus && <span className="profile-subscribe-status">{subStatus}</span>}
               </div>
@@ -597,7 +604,7 @@ export default function ProfilePageClient({
                 className="btn btn-outline btn-sm profile-subscribe-trigger"
                 onClick={() => setShowSubscribe(true)}
               >
-                Get updates from {profile.display_name || profile.username}
+                {t("profile_page.get_updates")} {profile.display_name || profile.username}
               </button>
             )}
           </div>
@@ -633,15 +640,15 @@ export default function ProfilePageClient({
           <div className="modal profile-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 360 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
               <IconLock size={20} />
-              <h2 style={{ margin: 0 }}>Private Link</h2>
+              <h2 style={{ margin: 0 }}>{t("profile_page.private_link")}</h2>
             </div>
             <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
-              Enter the PIN to access this link.
+              {t("profile_page.enter_pin_link")}
             </p>
             <input
               type="password"
               className="form-input"
-              placeholder="Enter PIN"
+              placeholder={t("profile_page.enter_pin_placeholder")}
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handlePinSubmit()}
@@ -649,10 +656,10 @@ export default function ProfilePageClient({
             />
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setPinLinkId(null)}>
-                Cancel
+                {t("profile_page.cancel")}
               </button>
               <button className="btn btn-primary" onClick={handlePinSubmit}>
-                Unlock
+                {t("profile_page.unlock")}
               </button>
             </div>
           </div>
@@ -665,15 +672,15 @@ export default function ProfilePageClient({
           <div className="modal profile-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 360 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
               <IconLock size={20} />
-              <h2 style={{ margin: 0 }}>Private Post</h2>
+              <h2 style={{ margin: 0 }}>{t("profile_page.private_post")}</h2>
             </div>
             <p style={{ color: "var(--text-muted)", marginBottom: 16 }}>
-              Enter the PIN to read this post.
+              {t("profile_page.enter_pin_post")}
             </p>
             <input
               type="password"
               className="form-input"
-              placeholder="Enter PIN"
+              placeholder={t("profile_page.enter_pin_placeholder")}
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handlePostPinSubmit()}
@@ -681,10 +688,10 @@ export default function ProfilePageClient({
             />
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setPinPostId(null)}>
-                Cancel
+                {t("profile_page.cancel")}
               </button>
               <button className="btn btn-primary" onClick={handlePostPinSubmit}>
-                Unlock
+                {t("profile_page.unlock")}
               </button>
             </div>
           </div>

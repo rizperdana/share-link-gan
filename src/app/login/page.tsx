@@ -76,7 +76,7 @@ export default function LoginPage() {
           {t("auth.google_login")}
         </button>
 
-        <div className="auth-divider">or</div>
+        <div className="auth-divider">{t("auth.or")}</div>
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
