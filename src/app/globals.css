@@ -38,7 +38,7 @@
   --bg-card: #ffffff;
   --text-primary: #111827;
   --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
+  --text-muted: #6b7280;
   --border-color: rgba(0, 0, 0, 0.1);
   --accent: #4f46e5;
   --accent-gradient: linear-gradient(135deg, #4f46e5, #0ea5e9);
@@ -61,8 +61,8 @@
   --bg-primary: #0a0a0f;
   --bg-card: #151c2c;
   --text-primary: #f0f0f5;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
   --border-color: rgba(255, 255, 255, 0.08);
   --accent: #8b5cf6;
   --accent-gradient: linear-gradient(135deg, #8b5cf6, #06b6d4);
@@ -1333,8 +1333,8 @@ img {
 }
 
 .dash-sidebar-link {
-  font-size: 0.7rem;
-  color: var(--gray-400);
+  font-size: 0.75rem;
+  color: var(--text-muted);
   text-decoration: none;
   white-space: nowrap;
   overflow: hidden;
